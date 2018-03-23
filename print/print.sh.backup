@@ -1,0 +1,50 @@
+#!/bin/bash
+
+##
+# Generate YiM Label
+#
+# Arguments:
+# print.sh NAME POSITION ROOM FOOD COMMENT
+#
+# MEAL ***/early/late/-
+# COMMENT:
+#   U18 / Aufsichtsperson: Lukas Hermann (A2.201)
+#   English Translation
+#
+# e.g. ./print.sh "Lukas" "TL" "2" "-" "Liz"
+
+
+# Get user input
+if [[ $1 == "" && $2 == "" && $3 == "" && $4 == "" ]]
+then
+	echo "Four arguments are mandatory"
+    exit
+fi
+
+# create temp file
+cp pattern.html temp.html
+
+# Replace strings
+sed -i .sed "s/%%NAME%%/$1/g" temp.html
+sed -i .sed "s/%%STATUS%%/$2/g" temp.html
+sed -i .sed "s/%%ROOM%%/$3/g" temp.html
+sed -i .sed "s/%%MEAL%%/$4/g" temp.html
+sed -i .sed "s/%%GUARDIAN%%/$5/g" temp.html
+
+if [[ $5 == "" ]]
+then
+    sed -i .sed "s/%%U18%%.*%%U18%%//g" temp.html
+else
+    sed -i .sed "s/%%U18%%//g" temp.html
+fi
+
+weasyprint -s style.css temp.html temp.pdf
+
+rm temp.html temp.html.sed
+
+#lpr -P Brother_QL-570 temp.pdf
+echo "lpr -P Brother_QL-570 temp.pdf"
+
+
+
+

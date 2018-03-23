@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+
+    <title>Label</title>
+
+    <style>
+        * {
+            margin: 0;
+        }
+    </style>
+
+    <link rel="stylesheet" href="../fontawsome/css/font-awesome.css" media="all">
+
+    <style>
+        html {
+            font-size: 10pt;
+            font-family: "Roboto", sans-serif;
+            padding: 3mm;
+        }
+
+        h1 {
+            font-size: 120%;
+        }
+
+        small {
+            font-size: 80%;
+        }
+
+        .container {
+            /*width: 62mm;*/
+        }
+
+        .header,
+        .body {
+            margin-bottom: .5em;
+        }
+
+        .body,
+        .footer {
+            border-top: 2px solid black;
+            padding-top: .5em;
+        }
+
+        .body__item {
+            width: 50%;
+            display: inline-block;
+            text-align: center;
+        }
+        .food > * {
+            vertical-align: middle;
+        }
+        .food__box,
+        .food__text {
+            display: inline-block;
+        }
+        .food__text {
+            padding: 0 .5em;
+        }
+        .food__box {
+            width: 12px;
+            height: 12px;
+            border: 2px solid #000;
+        }
+        .food--early .food__box:first-child { background-color: #000; }
+        .food--late .food__box:last-child { background-color: #000; }
+        .food--priv .food__box { display: none; }
+        .food--priv .food__text {
+            background-color: #000;
+            color: #fff;
+            line-height: 80%;
+            padding-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Lukas Hermann [EN*]</h1>
+            <p><span class="fa fa-user"></span> YiM-Arbeitskreis</p>
+        </div>
+        <div class="body">
+            <div class="body__item"><small><span class="fa fa-bed"></span> Zimmer:</small><br>B1.201</div><!--
+            --><div class="body__item">
+                    <small><span class="fa fa-cutlery"></span> Essen:</small>
+                    <div class="food food--priv">
+                        <div class="food__text">***</div>
+                        <div class="food__box"></div>
+                        <div class="food__box"></div>
+                    </div>
+                </div>
+        </div>
+        <div class="footer">
+            <p><small>U18 / Aufsichtsperson: <br>Marc Engelmann (B1.201)</small></p>
+        </div>
+    </div>
+
+</body>
+</html>

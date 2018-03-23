@@ -1,0 +1,27 @@
+<?php
+
+// /Applications/MAMP/bin/php/php7.0.13/bin/php -d display_errors triggerprint.php
+
+require_once("../config.php");
+require_once("../lib/mysql.php");
+global $db;
+
+// Get next row from db where printed = 0
+$row = $db->get_single_row($db->queue, 'printed', 0);
+
+// Exit if there is no row
+if( !$row ) exit;
+
+// set the value op printet = 1
+$db->update_value($db->queue, $row->id, 'printed', 1);
+
+// call ../print/print.sh
+$execstr = sprintf('./print.sh "%s" "%s" "%s" "%s"',
+                        $row->name,
+                        $row->position,
+                        $row->room,
+                        $row->meal,
+                        $row->guardian ? $row->guardian : ''
+                   );
+
+file_put_contents ( "triggerprint.log", shell_exec( $execstr ), FILE_APPEND );
