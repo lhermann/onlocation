@@ -32,8 +32,14 @@ class DB
         $this->mysqli->set_charset( $charset );
 
         $this->main = "main_registrations";
+        $this->yimteam = "yimteam";
         $this->queue = "printqueue";
         $this->rooms = "rooms";
+
+        // check if tables 'printqueue' and 'rooms' exist, create them if needed
+        if( !$this->mysqli->query('SELECT 1 FROM testtable LIMIT 1;') ) {
+            $this->mysqli->query( file_get_contents(__DIR__.'/table.rooms.sql') );
+        }
     }
 
     public function insert_row($table, $cols, $values) {
@@ -93,15 +99,15 @@ class DB
             WHERE $where;
         ";
         $res = $this->mysqli->query( $string );
-        return $res->fetch_all();
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function get_single_row($table, $col, $value) {
+    public function get_single_row($table, $col, $value, $limit = 1) {
         $string = "
             SELECT *
             FROM $table
-            WHERE $col = $value
-            LIMIT 1;
+            WHERE $col = '$value'
+            LIMIT $limit;
         ";
         $res = $this->mysqli->query( $string );
         return $res->fetch_object();
@@ -150,18 +156,28 @@ class DB
         return $return;
     }
 
-    public function get_rooms_with_count($gender, $label) {
-        // Building where clause
-        switch ($label) {
-            case 'Mitarbeiter':
-                $where = "label = 'Mitarbeiter' ";
-                break;
+    /*
+     * Priorities:
+     *  1: Familienzimmer
+     *  2: Teilnehmer
+     *  3: Mitarbeiter
+     */
+    public function get_rooms_with_count($status = 'Teilnehmer', $gender = null) {
+
+        $priority = 1;
+        switch ($status) {
             case 'Teilnehmer':
-            default:
-                $where = "gender = '$gender' AND label = 'Teilnehmer' ";
+            case 'Volunteer':
+                $priority = 2;
                 break;
+            case 'Mitarbeiter':
+            default:
+                $priority = 3;
         }
-        $where .= "OR label = 'Familienzimmer'";
+
+        // gender
+        $gender_clause = "gender IS NULL";
+        if($gender) $gender_clause .= " OR gender = '$gender'";
 
         // Building query
         $string = "
@@ -169,7 +185,9 @@ class DB
                 rooms.*,
                 (SELECT COUNT(*) FROM main_registrations AS reg WHERE reg.rg_assigned_roomID = rooms.id) AS count
             FROM rooms
-            WHERE $where;
+            WHERE priority <= $priority
+            AND $gender_clause
+            ORDER BY priority desc, count asc;
         ";
 
         $res = $this->mysqli->query( $string );

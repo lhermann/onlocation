@@ -80,7 +80,7 @@
                                         <?php endif; ?>
                                         <?= '['.$reg->guardian_id.'] '.$reg->guardian_name ?>
                                     <?php else: ?>
-                                        <a class="btn btn-success btn-sm" href="<?= $route->page_url( 90, ['regid', 's_name'], [$reg->id, $reg->guardian_name] ); ?>" role="button">Aufsichtsperson</a>
+                                        <a class="btn btn-success btn-sm" href="<?= $route->page_url( 'guardian', ['regid', 's_name'], [$reg->id, $reg->guardian_name] ); ?>" role="button">Aufsichtsperson</a>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -90,10 +90,10 @@
                                         <span class="glyphicon glyphicon-remove text-danger"></span> <small>Aufsichtsperson ist noch nicht registriert</small>
                                     <?php elseif( !$reg->date_arrived ): ?>
                                         <span class="glyphicon glyphicon-remove text-danger"></span>
-                                        <a class="btn btn-default btn-sm" href="<?= $route->page_url( 2, 'regid', $reg->id ); ?>" role="button">Registrieren</a>
+                                        <a class="btn btn-default btn-sm" href="<?= $route->page_url( 'info', 'regid', $reg->id ); ?>" role="button">Registrieren</a>
                                     <?php else: ?>
                                         <span class="glyphicon glyphicon-ok text-success"></span>
-                                        <a class="btn btn-default btn-sm" href="<?= $route->page_url( 2, 'regid', $reg->id ); ?>" role="button">Ändern</a>
+                                        <a class="btn btn-default btn-sm" href="<?= $route->page_url( 'info', 'regid', $reg->id ); ?>" role="button">Info</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>

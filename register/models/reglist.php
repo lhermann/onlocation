@@ -24,6 +24,10 @@ class Reglist
             $this->search_key = 's_name';
             $this->search_value = $route->query['s_name'];
             $rows = $db->search_name($route->query['s_name']);
+        } elseif ( isset($route->query['regid']) && $route->query['regid'] ) {
+            $this->search_key = 's_regid';
+            $this->search_value = $route->query['regid'];
+            $rows[] = $db->search_regid($route->query['regid']);
         } else {
             $rows = array();
         }

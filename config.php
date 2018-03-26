@@ -57,7 +57,7 @@ define('FIELDS', array(
     ''                  => 'rg_customfield16',
     'guardian_name'     => 'rg_customfield17',
     'guardian_id'       => 'rg_customfield18',
-    ''                  => 'rg_customfield19',
+    'room_name'         => 'rg_customfield19',
     ''                  => 'rg_customfield20',
     ''                  => 'rg_customfield21',
     ''                  => 'rg_customfield22',
@@ -73,35 +73,22 @@ define('FIELDS', array(
 
 
 /**
- * Positions
+ * Areas
  *
  * Format: slug => Title
  */
-// define('POSITION', array(
-//     'Maintenance'       => 'Volunteer: Sauberkeit',
-//     'Logistics'         => 'Volunteer: Logistik',
-//     'Surroundings'      => 'Volunteer: Außenbereich',
-//     'Ushers'            => 'Volunteer: Saalordnung',
-//     'SongService'       => 'Volunteer: Song Service',
-//     'VideoProject'      => 'Volunteer: YiM Videoprojekt',
-//     'Workshops'         => 'Volunteer: Workshoptechnik',
-//     'Outreach'          => 'Volunteer: Outreach',
-//     'KitchenAndServing' => 'Volunteer: Küche und Essensausgabe',
-//     'Registration'      => 'Volunteer: Registrierung',
-//     'Security'          => 'Volunteer: Security',
-//     'Technical'         => 'Volunteer: Technik',
-//     'Arbeitskreis'      => 'YiM-Arbeitskreis',
-//     'Mitarbeiter'       => 'Mitarbeiter',
-//     'Standbetreuer'     => 'Standbetreuer',
-//     'Sprecher'          => 'Sprecher',
-//     'SpecialVolunteer'  => 'Special Volunteer',
-//     ''                  => 'Teilnehmer'
-// ));
+define('AREA', array(
+    'maintenance'       => 'Sauberkeit',
+    'wsaudio'           => 'Workshop Audio',
+    'surroundings'      => 'Außenbereich',
+    'ushers'            => 'Saalordnung',
+    'registration'      => 'Registrierung',
+    'security'          => 'Security',
+    'kitchen'           => 'Küche',
+    ''                  => ''
+));
 
 
 // dump sql from yimteam
-// pg_dump -W -U daniel yimteam > file.sql
-// pw: OHx1A2NlD9ChEsAee9LVq9Bp
-// pg_dump yimteam | gzip > yimteam.sql.gz
 // psql -d yimteam -c "Copy (Select * From helpers_helper) To STDOUT With CSV HEADER DELIMITER ',';" > yimteam.csv
 

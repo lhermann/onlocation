@@ -13,29 +13,22 @@ global $route;
 require_once("models/reglist.php");
 require_once("models/reg.php");
 
-// Instantiate Model
-// $classname = ucfirst($route->model);
-// ${$route->model} = new $classname( $route );
-// global ${$route->model};
-
+// Update the Database
 if( isset($route->query['update_db']) ) {
     $reg = new Reg( $route->regid );
     $reg->update($route->query);
-
-    if( isset($route->query['date_arrived']) ) {
-        $reg->add_label_to_print_queue( $route->regid, $route->printer );
-    }
 }
 
-
+// If route has a target, do a redirect
 if( $route->target !== null ) {
+    // var_dump($route); die();
     header('Location: /'.$route->page_url(
         $route->target,
-        isset($route->query['s_regid']) ? 's_regid' : '',
-        isset($route->query['s_regid']) ? $route->query['s_regid'] : ''
+        isset($route->query['s_regid']) ? 's_regid' : null,
+        isset($route->query['s_regid']) ? $route->query['s_regid'] : null
     ));
     exit;
 }
 
-// View
-require("views/page_".$route->get_page().".php");
+// Require View
+require($route->get_view_file());

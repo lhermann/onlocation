@@ -16,14 +16,14 @@
 
     <style>
         html {
-            font-size: 10pt;
+            font-size: 8pt;
             font-family: "Roboto", sans-serif;
             padding: 3mm 3mm 0;
         }
 
         h1 {
-            font-size: 110%;
-            line-height: .9;
+            font-size: 11pt;
+            line-height: 1;
             padding-bottom: .2em;
         }
 
@@ -33,13 +33,12 @@
 
         .header,
         .body {
-            margin-bottom: .6em;
+            margin-bottom: .8em;
         }
 
-        .body,
-        .footer {
-            border-top: 2px solid black;
-            padding-top: .5em;
+        .body {
+            border: 1px solid black;
+            padding: .8em .2em;
         }
 
         .body__item {
@@ -47,9 +46,8 @@
             display: inline-block;
             text-align: center;
         }
-        .volunteer,
         .comment {
-            font-size: 75%;
+            font-size: 80%;
         }
         .food {
 
@@ -62,21 +60,23 @@
             padding: 0 .5em;
         }
         .food__box {
+            color: white;
+            font-size: 1.5em;
+            line-height: 18px;
             width: 12px;
             height: 12px;
             border: 2px solid #000;
             vertical-align: bottom;
         }
-        .food--early .food__box:not(:last-child) { background-color: #000; }
-        .food--late .food__box:last-child { background-color: #000; }
-        .food--priv .food__box { display: none; }
-        .food--priv .food__text {
-            background-color: #000;
-            color: #fff;
-            line-height: 80%;
-            padding-top: 5px;
+        .food--early .food__box:not(:last-child),
+        .food--late .food__box:last-child {
+            color: black;
+            background-color: black;
         }
-        .food--none .food__text {display: none;}
+        .food--priv .food__box {
+            background-color: black;
+        }
+        /*.food--none .food__text {display: none;}*/
     </style>
 </head>
 <body>
@@ -84,18 +84,20 @@
     <div class="container">
         <div class="header">
             <h1>%%NAME%%</h1>
-            <p class="volunteer"><span class="fa fa-user"></span> %%POSITION%%</p>
+            <p class="volunteer"><span class="fa fa-user"></span> %%STATUS%%</p>
         </div>
         <div class="body">
-            <div class="body__item"><small><span class="fa fa-bed"></span> Zimmer:</small><br>%%ROOM%%</div><!--
-            --><div class="body__item">
-                    <small><span class="fa fa-cutlery"></span> Essen:</small>
-                    <div class="food %%FOOD-CLASS%%">
-                        <div class="food__text">%%FOOD%%</div>
-                        <div class="food__box"></div>
-                        <div class="food__box"></div>
-                    </div>
+            <div class="body__item">
+                <span class="fa fa-bed"></span> Raum
+                <br><strong>%%ROOM%%</strong>
+            </div><!--
+         --><div class="body__item">
+                <span class="fa fa-cutlery"></span> %%FOOD%%
+                <div class="food %%FOOD-CLASS%%">
+                    <div class="food__box">*</div>
+                    <div class="food__box">*</div>
                 </div>
+            </div>
         </div>
         <div class="footer">
             <p class="comment">%%COMMENT%%</p>

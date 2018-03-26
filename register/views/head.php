@@ -1,3 +1,7 @@
+<?php
+global $route;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>YiM Anmeldung</title>
+    <title>OnLocation >> <?= ucfirst($route->get_page()) ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="/register/assets/css/bootstrap.min.css" rel="stylesheet">
@@ -43,20 +47,18 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><p class="navbar-text">Schritt:</p></li>
-                    <?php for ($i=1; $i <= 6 ; $i++): ?>
-                        <?php if($route->get_page() == 1 || $i == 6): ?>
-                            <li class="navbar-text <?= $route->get_page() == $i ? 'active' : '' ?>">
-                                    <?= $i ?>
-                            </li>
-                        <?php else: ?>
-                            <a class="navbar-text <?= $route->get_page() == $i ? 'active' : '' ?>" href="/?p=<?= $i ?>&printer=<?= $route->printer ?>&regid=<?= $route->regid ?>">
-                                <?= $i ?>
-                            </a>
-                        <?php endif; ?>
-                    <?php endfor; ?>
+                    <li <?= $route->is_page('search') ? 'class="active"' : '' ?>>
+                        <a href="<?= $route->page_url('search') ?>">Suche</a>
+                    </li>
+                    <li <?= $route->is_page('info') ? 'class="active"' : '' ?>>
+                        <a href="<?= $route->page_url('info') ?>">Info</a>
+                    </li>
+                    <li <?= $route->is_page('print') ? 'class="active"' : '' ?>>
+                        <a href="<?= $route->page_url('print') ?>">Drucken</a>
+                    </li>
                 </ul>
                 <p class="navbar-text navbar-right">IP: <?= $_SERVER['HTTP_X_REAL_IP'] ?></p>
+                <p class="navbar-text navbar-right">RegID: <?= $route->get_regid() ?></p>
                 <!-- <div class="nav navbar-nav navbar-right">
                     <ul class="nav navbar-nav">
                         <li><p class="navbar-text">Drucker:</p></li>

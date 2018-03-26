@@ -73,18 +73,37 @@ CREATE TABLE `main_registrations` (
 
 CREATE TABLE `printqueue` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(20) DEFAULT NULL,
+  `ip` varchar(50) DEFAULT NULL,
   `printerid` tinyint(4) unsigned DEFAULT NULL,
   `printed` tinyint(4) unsigned DEFAULT '0',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` timestamp NULL DEFAULT NULL,
   `file` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5837 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rooms` (
-  `id` varchar(11) NOT NULL DEFAULT '',
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL DEFAULT '',
   `gender` varchar(8) DEFAULT NULL,
-  `label` varchar(20) DEFAULT 'Teilnehmer',
+  `priority` smallint(6) DEFAULT '1',
+  `status` varchar(20) DEFAULT 'Teilnehmer',
+  `early_or_late` varchar(11) DEFAULT 'late',
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `yimteam` (
+  `id` int(11) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `area` varchar(255) DEFAULT NULL,
+  `food_privilege` varchar(255) DEFAULT NULL,
+  `free_admission` varchar(255) DEFAULT NULL,
+  `above_35` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `age` varchar(255) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `t_shirt_size` varchar(255) DEFAULT NULL,
+  `reg_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

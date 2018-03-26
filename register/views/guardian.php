@@ -14,7 +14,7 @@
 
     <div class="text-center">
         <h1>Aufsichtsperson Wählen</h1>
-        <p>Für [<?= $candidate->id ?>] <?= $candidate->firstname.' '.$candidate->lastname ?> <a class="btn btn-default btn-sm" href="<?= $route->page_url( 1, 's_regid', $route->regid ); ?>" role="button">Zurück</a></p>
+        <p>Für [<?= $candidate->id ?>] <?= $candidate->firstname.' '.$candidate->lastname ?> <a class="btn btn-default btn-sm" href="<?= $route->page_url( 'search', 's_regid', $route->regid ); ?>" role="button">Zurück</a></p>
     </div>
 
     <div class="row">
@@ -75,7 +75,7 @@
                                     <?php if( $reg->u18 ): ?>
                                         <span class="glyphicon glyphicon-warning-sign text-danger"></span> Unter 18
                                     <?php else: ?>
-                                        <a class="btn btn-success btn-sm" href="<?= $route->page_url( 1, ['s_regid', 'update_db', 'target', 'guardian_id', 'guardian_name'], [$route->regid, true, 1, $reg->id, $reg->name()] ); ?>" role="button">Auswählen</a>
+                                        <a class="btn btn-success btn-sm" href="<?= $route->page_url( 'search', ['s_regid', 'update_db', 'target', 'guardian_id', 'guardian_name'], [$route->regid, true, 'search', $reg->id, $reg->name()] ); ?>" role="button">Auswählen</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>

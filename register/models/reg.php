@@ -8,21 +8,21 @@ class Reg
 
     public $id, $firstname, $lastname, $gender, $addr, $zip, $city, $state, $country, $paid;
 
-    function __construct( $regid, $row = false )
+    function __construct( $regid = 0, $row = false )
     {
         if( !$row ) {
             global $db;
             $row = $db->get_single_row($db->main, 'rg_registrationID', $regid);
         }
+        if(!$row) return;
 
         $this->id           = $row->rg_registrationID;
         $this->date_arrived = $row->rg_date_arrived;
-
-        // Page 2
         $this->firstname    = $row->rg_firstname;
         $this->lastname     = $row->rg_lastname;
+        $this->email        = $row->rg_email;
         $this->gender       = $row->rg_gender;
-        $this->translation  = (bool) $row->rg_customfield7;
+        $this->translation  = (bool) $row->{FIELDS['translation']};
         $this->birthdate    = strtotime( $row->rg_birthday.'-'.$row->rg_birthmonth.'-'.$row->rg_birthyear);
         $this->year         = $row->rg_birthyear;
         $this->addr         = $row->rg_addr;
@@ -33,7 +33,8 @@ class Reg
         $this->to_pay       = $row->rg_amount_to_pay;
         $this->paid         = $row->rg_amount_to_pay === '0.00' || $row->rg_amount_received !== null;
         $this->comment      = $row->rg_payment_comments;
-        $this->regtype      = $row->rg_customfield3;
+        $this->registration = $row->{FIELDS['registration']};
+        $this->t_shirt      = $row->{FIELDS['t-shirt']};
 
         $this->u18           = $this->is_under18();
         $this->guardian_id   = $row->{FIELDS['guardian_id']};
@@ -41,29 +42,39 @@ class Reg
         $this->has_guardian  = $this->has_guardian_set();
         $this->u18_letter    = $row->rg_parental_letter_received !== null;
 
-        // Page 3
-        $this->position     = $row->rg_customfield19 ?: $row->rg_customfield16 ?: $row->rg_customfield14;
-
-        // Page 4
-        if ( substr( $row->rg_customfield3, 0, 12 ) === "AllInclusive" ) {
-            $this->meal = $row->rg_customfield5;
-            if( $this->position ) $this->meal = "PrivEater";
+        /*
+         * volunteer/helper info
+         */
+        $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
+        if( $row->{FIELDS['label']} == 'Freiperson' ) $this->area = '';
+        if (!$this->area) {
+            $this->status = 'Teilnehmer';
         } else {
-            $this->meal = false;
+            $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
         }
 
-        // if( $this->position ) {
-        //     $this->meal = "PrivEater";
-        // } elseif( substr( $row->rg_customfield3, 0, 12 ) === "AllInclusive" ) {
-        //     $this->meal = $row->rg_customfield5;
-        // } else {
-        //     $this->meal = false;
-        // }
 
-        if( $row->rg_assigned_roomID ) {
-            $this->room  = $row->rg_assigned_roomID;
-        } else if( substr( $this->regtype, 0, 13 ) === "NoFoodLodging" || $row->rg_customfield4 == "ExternalHousing" ) {
-            $this->room  = "extern";
+        /*
+         * lodging
+         */
+        $this->has_lodging = in_array($this->registration, ['attendee', 'reduced']);
+        $this->external_lodging = $row->{FIELDS['external-housing']} == 'ExternalHousing';
+        $this->room_id = (int) $row->rg_assigned_roomID;
+
+        if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
+            $this->room_id = 0;
+        }
+
+
+        /*
+         * meals
+         */
+        // if they booked food then:
+        $this->has_meal = in_array($this->registration, ['attendee', 'reduced']);
+        $this->has_food_priv = $this->is_helper() || (bool) $row->{FIELDS['food-priv']};
+        $this->meal = $row->{FIELDS['food-time']};
+        if( $this->has_meal && $this->has_food_priv ) {
+            $this->meal = 'PrivEater';
         }
 
     }
@@ -74,6 +85,14 @@ class Reg
 
     private function has_guardian_set() {
         return $this->guardian_id && $this->guardian_name || !$this->u18 ? true : false;
+    }
+
+    public function is_attendee() {
+        return $this->status === 'Teilnehmer';
+    }
+
+    public function is_helper() {
+        return !in_array($this->status, ['Teilnehmer', 'Standleiter']);
     }
 
     public function update( $a_in ) {
@@ -96,40 +115,36 @@ class Reg
             $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : NULL;
         }
 
-        // Page 3
-        if( isset($a_in['position']) ) {
-            $a_out['rg_customfield19'] = $a_in['position'] == 'other' ? $a_in['position-text'] : $a_in['position'];
-        }
-
-        // Page 4
-        if( isset($a_in['meal']) ) $a_out['rg_customfield5'] = $a_in['meal'];
-        if( isset($a_in['room']) ) $a_out['rg_assigned_roomID'] = $a_in['room'];
-
-        // Page 5
-        if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
-
-        // Page 90
+        /*
+         * guardian
+         */
         if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
         if( isset($a_in['guardian_id']) ) $a_out['rg_customfield18'] = $a_in['guardian_id'];
 
-        return $db->update_row( $db->main, $this->id, $a_out );
-    }
+        /*
+         * volunteer/helper info
+         */
+        if( isset($a_in['label']) )        $a_out[FIELDS['label']] = $a_in['label'];
+        if( isset($a_in['area_private']) ) $a_out[FIELDS['area-private']] = $a_in['area_private'];
 
-    public function print_position_button( $position ) {
-        if( $position === 'other' ) {
-            return sprintf('<label class="btn btn-default input-group-addon"><input type="radio" name="position" value="%s" %s></label><input type="text" class="form-control" name="position-text" value="%s">',
-                $position,
-                !array_key_exists ( $this->position , POSITION ) ? 'checked' : '',
-                !array_key_exists ( $this->position , POSITION ) ? $this->position : ''
-            );
-        } else {
-            return sprintf('<label class="btn btn-default text-left %s"><input type="radio" name="position" value="%s" %s> %s</label>',
-                $this->position == $position ? 'active' : '',
-                $position,
-                $this->position == $position ? 'checked' : '',
-                POSITION[$position]
-            );
-        }
+        /*
+         * lodging
+         */
+        if( isset($a_in['room_id']) )      $a_out['rg_assigned_roomID'] = $a_in['room_id'];
+
+        /*
+         * meals
+         */
+        if( isset($a_in['food_time']) )    $a_out[FIELDS['food-time']] = $a_in['food_time'];
+
+
+        /*
+         * arrival
+         */
+        if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
+
+
+        return $db->update_row( $db->main, $this->id, $a_out );
     }
 
     public function print_meal_button( $meal ) {
@@ -142,67 +157,48 @@ class Reg
         }
         // Disabled?
         $disabled = false;
-        if( $this->meal != 'PrivEater' && $meal == 'PrivEater' ) {
+        if( $meal == 'PrivEater' && !$this->has_food_priv ) {
+            $disabled = true;
+        } elseif( $meal !== 'PrivEater' && $this->has_food_priv ) {
             $disabled = true;
         }
-        return sprintf('<label class="btn btn-default %s" %s>
-                            <input type="radio" name="meal" value="%s" %s %s> %s
-                        </label>',
-                $this->meal == $meal ? 'active' : '',
-                $disabled ? 'disabled="disabled"' : '',
+
+        return sprintf('<div class="radio %s"><label>
+                            <input type="radio" name="food_time" value="%s" %s %s> %s
+                        </label></div>',
+                $disabled ? 'disabled text-muted' : '',
                 $meal,
                 $this->meal == $meal ? 'checked' : '',
-                $disabled ? 'disabled' : '',
+                $disabled ? 'disabled="disabled"' : '',
                 $label
         );
     }
 
     public function print_room_options() {
-
-        // No lodging
-        // if( $this->room == "extern" ) {
-        //     return '<option value="extern" selected>Schläft extern</option>';
-        // }
-
-        // With Lodging
         global $db;
-        $rooms = $db->get_rooms_with_count($this->gender, in_array($this->position, ["Mitarbeiter", "Arbeitskreis"]) ? "Mitarbeiter" : "Teilnehmer");
 
-        // var_dump($rooms); exit;
+        $rooms = $db->get_rooms_with_count(
+            $this->status,
+            $this->gender
+        );
 
-        // Shift Familienzimmer to end
-        $rooms[] = array_shift($rooms);
-
-        // Find room with fewest people
-        if( !$this->room ) {
-            $min = [0, 2000];
-            foreach ($rooms as $key => $room) {
-                $min = $room->count < $min[1] ? [$key, $room->count] : $min;
-            }
-            $this->room = $rooms[$min[0]]->id;
-        }
-
-
-        // Return options
-        $return = "";
-        $in_list = $this->room == "extern" ? true : false;
+        // print dropdown
+        print('<select name="room_id" class="form-control">');
         foreach ($rooms as $room) {
-            if( $room->id == $this->room ) $in_list = true;
-            $return .= sprintf('<option value="%s" %s>[%s] %s (%s %s %s)</option>',
-                $room->id,
-                $room->id == $this->room ? "selected" : "",
-                $room->count,
-                $room->id,
-                $room->label,
-                $room->gender,
-                $room->time
+            printf('<option value="%d" %s>[%s] %s %s %s</option>',
+                   $room->id,
+                   $room->id == $this->room_id ? "selected" : "",
+                   $room->count,
+                   $room->name,
+                   $room->status ? '- '.$room->status : '',
+                   $room->early_or_late == 'early' ? "Frühschläfer" : ''
             );
         }
-        $return .= '<option value="extern" '.($this->room == "extern" ? "selected" : "").'>Schläft extern</option>';
-        if( $this->room && !$in_list ) {
-            $return .= "<option value=\"$this->room\" selected>$this->room</option>";
-        }
-        return $return;
+        printf('<option value="0" %s>Schläft extern</option>',
+               $this->room_id === 0 ? "selected" : "",
+               'Schläft extern'
+        );
+        print('</select>');
     }
 
     public function human_birthdate() {
@@ -212,7 +208,7 @@ class Reg
     public function name() {
         $name = $this->firstname.' '.$this->lastname;
         if( $this->country != 'DE' ) {
-            $name .= ' ['.$this->country.($this->translation ? '*' : '').']';
+            $name .= ' ['.$this->country.']';
         }
         return $name;
     }
@@ -227,6 +223,7 @@ class Reg
     }
 
     public function generate_print_pattern() {
+        global $db;
         $labeldir = dirname(dirname(__DIR__)) . '/labels/';
 
         // Get file
@@ -239,42 +236,48 @@ class Reg
         $patterns[0] = '/%%NAME%%/';
         $replacements[0] = $this->name();
 
-        $patterns[1] = '/%%POSITION%%/';
-        $replacements[1] = POSITION[$this->position] ?: $this->position;
-        if( $this->state == 'BW' && $this->year >= 1990 ) $replacements[1] .= ' &middot;';
+        $patterns[1] = '/%%STATUS%%/';
+        $replacements[1] = $this->status;
+        if($this->status !== 'Teilnehmer') $replacements[1] .= ' &ndash; '.$this->area;
+        // if( $this->state == 'BW' && $this->year >= 1990 ) $replacements[1] .= ' &middot;';
 
+        $room = $db->get_single_row($db->rooms, 'id', $this->room_id);
         $patterns[2] = '/%%ROOM%%/';
-        $replacements[2] = $this->room;
+        $replacements[2] = $this->room_id ? $room->name : 'Extern';
 
         $patterns[3] = '/%%FOOD-CLASS%%/';
         $patterns[4] = '/%%FOOD%%/';
         switch ($this->meal) {
             case 'PrivEater':
                 $replacements[3] = 'food--priv';
-                $replacements[4] = '***';
+                $replacements[4] = 'Essen';
                 break;
             case 'EarlyEater':
                 $replacements[3] = 'food--early';
-                $replacements[4] = 'Früh';
+                $replacements[4] = 'Frühesser';
                 break;
             case 'LaterEater':
                 $replacements[3] = 'food--late';
-                $replacements[4] = 'Spät';
+                $replacements[4] = 'Spätesser';
                 break;
             default:
                 $replacements[3] = 'food--none';
-                $replacements[4] = '';
+                $replacements[4] = 'Kein Essen';
                 break;
         }
 
         $patterns[5] = '/%%COMMENT%%/';
         $replacements[5] = "";
+        if( $this->translation ) {
+            $replacements[5] .= "Englische Übersetung";
+        }
         if( $this->u18 ) {
             $guardian = new Reg($this->guardian_id);
-            $replacements[5] = sprintf( "U18 / Aufsichtsperson:<br>[%s] %s (%s)",
+            $guardian_room = $db->get_single_row($db->rooms, 'id', $guardian->room_id);
+            $replacements[5] .= sprintf( "U18 / Aufsichtsperson:<br>[%s] %s (%s)",
                 $guardian->id,
                 $guardian->name(),
-                $guardian->room
+                $guardian->room_id ? $guardian_room->name : 'Extern'
             );
         }
 
@@ -287,11 +290,15 @@ class Reg
         return null;
     }
 
-    public function add_label_to_print_queue($id, $printer) {
+    public function add_label_to_print_queue($printer = 1) {
         global $db;
-        $cols = array('ip', 'printerid', 'file');
-        $values = array( (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] ? $_SERVER['REMOTE_ADDR'] : "") , $printer, $id);
-        // var_dump($cols, $values); exit;
+        // var_dump($_SERVER); die;
+        $cols = ['ip', 'printerid', 'file'];
+        $values = [
+            $_SERVER['HTTP_X_REAL_IP'] ?: $_SERVER['REMOTE_ADDR'],
+            $printer,
+            $this->id
+        ];
         $db->insert_row($db->queue, $cols, $values);
     }
 
