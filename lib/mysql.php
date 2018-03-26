@@ -37,8 +37,9 @@ class DB
         $this->rooms = "rooms";
 
         // check if tables 'printqueue' and 'rooms' exist, create them if needed
-        if( !$this->mysqli->query('SELECT 1 FROM testtable LIMIT 1;') ) {
+        if( !$this->mysqli->query("SELECT 1 FROM $this->rooms LIMIT 1;") ) {
             $this->mysqli->query( file_get_contents(__DIR__.'/table.rooms.sql') );
+            $this->mysqli->query( file_get_contents(__DIR__.'/table.printqueue.sql') );
         }
     }
 
