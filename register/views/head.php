@@ -57,7 +57,7 @@ global $route;
                         <a href="<?= $route->page_url('print') ?>">Drucken</a>
                     </li>
                 </ul>
-                <p class="navbar-text navbar-right">IP: <?= $_SERVER['HTTP_X_REAL_IP'] ?></p>
+                <p class="navbar-text navbar-right">IP: <?= $_SERVER['REMOTE_ADDR'] ?></p>
                 <p class="navbar-text navbar-right">RegID: <?= $route->get_regid() ?></p>
                 <!-- <div class="nav navbar-nav navbar-right">
                     <ul class="nav navbar-nav">

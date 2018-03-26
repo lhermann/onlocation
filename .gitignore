@@ -4,6 +4,7 @@ npm-debug.log
 .DS_Store
 Thumbs.db
 
+info.php
 config.php
 labels/src
 labels/pdf

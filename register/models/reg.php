@@ -295,7 +295,7 @@ class Reg
         // var_dump($_SERVER); die;
         $cols = ['ip', 'printerid', 'file'];
         $values = [
-            $_SERVER['HTTP_X_REAL_IP'] ?: $_SERVER['REMOTE_ADDR'],
+            $_SERVER['REMOTE_ADDR'],
             $printer,
             $this->id
         ];
