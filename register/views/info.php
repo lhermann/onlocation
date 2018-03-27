@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <div class="panel <?= $reg->u18_letter ? 'panel-success' : 'panel-danger' ?>">
+                <div class="panel <?= $reg->u18 && $reg->u18_letter ? 'panel-danger' : 'panel-success' ?>">
                     <div class="panel-heading">
                         <h3 class="panel-title">Aufsichtsperson</h3>
                     </div>
