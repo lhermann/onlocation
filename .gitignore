@@ -6,5 +6,5 @@ Thumbs.db
 
 info.php
 config.php
-labels/src
-labels/pdf
+labels/src/*.html
+labels/pdf/*.pdf

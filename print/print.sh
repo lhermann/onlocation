@@ -17,7 +17,7 @@
 # Get user input
 if [[ $1 == "" ]]
 then
-	echo "one arguments are mandatory"
+	echo "one argument is mandatory"
     exit
 fi
 
