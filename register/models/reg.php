@@ -47,11 +47,13 @@ class Reg
          */
         // area
         $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
-        if( $row->{FIELDS['label']} == 'Freiperson' ) $this->area = '';
         // status
         $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
-        if (!$this->area) $this->status = 'Teilnehmer';
+        if (!$this->area || $this->status == 'Freiperson') $this->status = 'Teilnehmer';
         if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
+        // remove area of some stati
+        if(in_array($this->status, ['Teilnehmer', 'TTBW', 'Medical Team']))
+            $this->area = '';
 
         /*
          * lodging
