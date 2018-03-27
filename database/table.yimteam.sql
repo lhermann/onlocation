@@ -1,0 +1,15 @@
+CREATE TABLE `yimteam` (
+  `id` int(11) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `area` varchar(255) DEFAULT NULL,
+  `food_privilege` varchar(255) DEFAULT NULL,
+  `free_admission` varchar(255) DEFAULT NULL,
+  `above_35` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) DEFAULT NULL,
+  `age` varchar(255) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `t_shirt_size` varchar(255) DEFAULT NULL,
+  `reg_id` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
