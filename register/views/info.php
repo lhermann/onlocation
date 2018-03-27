@@ -9,7 +9,7 @@
 
 <div class="container">
 
-    <div style="padding-top: 6em;"></div>
+    <div style="padding-top: 4em;"></div>
 
     <?php //var_dump($reg); ?>
 
@@ -21,13 +21,11 @@
         <input type="hidden" name="update_db" value="true">
         <input type="hidden" name="target" value="print">
 
-        <h1><small>[<?= $reg->id ?>]</small> <?= $reg->firstname ?> <?= $reg->lastname ?></h1>
-        <p>
-            <?= $reg->human_birthdate() ?>
-            &middot; <?= $reg->gender == 'M' ? 'Männlich' : 'Weiblich' ?>
-            &middot; Übersetzung: <?= $reg->translation ? 'Ja' : 'Nein' ?>
-            &middot; <?= $reg->email ?>
-        </p>
+        <h1 class="form-inline">
+            <small>[<?= $reg->id ?>]</small>
+            <input type="text" class="form-control input-lg" value="<?= $reg->firstname ?>" name="firstname">
+            <input type="text" class="form-control input-lg" value="<?= $reg->lastname ?>" name="lastname">
+        </h1>
 
         <br>
 
@@ -36,12 +34,14 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Adresse</h3>
+                        <h3 class="panel-title">Personendaten</h3>
                     </div>
                     <div class="panel-body">
-                        <?= $reg->addr ?>
-                        <br><?= $reg->zip ?> <?= $reg->city ?>
-                        <br><?= $reg->state ?> <?= $reg->country ?>
+                        <?= $reg->human_birthdate() ?>
+                        &middot; <?= $reg->gender == 'M' ? 'Männlich' : 'Weiblich' ?>
+                        &middot; <?= $reg->email ?>
+                        <br><?= $reg->addr ?>, <?= $reg->zip ?> <?= $reg->city ?>, <?= $reg->state ?>, <?= $reg->country ?>
+                        <br>Übersetzung: <?= $reg->translation ? 'Ja' : 'Nein' ?>
                     </div>
                 </div>
 
@@ -52,21 +52,18 @@
                     <div class="panel-body">
                         <p>Buchungsart: <i><?= $reg->registration ?></i></p>
                         <?php if($reg->paid): ?>
-                            <p class="lead text-success">
+                            <span class="lead text-success">
                                 <?= $reg->to_pay ?> EUR <span class="glyphicon glyphicon-ok"></span>&nbsp; Bezahlt
-                            </p>
+                            </span>
                         <?php else: ?>
-                            <p class="lead text-danger">
+                            <span class="lead text-danger">
                                 <?= $reg->to_pay ?> EUR <span class="glyphicon glyphicon-remove"></span>&nbsp; Nicht Bezahlt
-                            </p>
+                            </span>
                         <?php endif; ?>
-                        <p>
-                            <textarea type="text" class="form-control" placeholder="Ohne Kommentar" cols="70" rows="2" name="comment"><?= $reg->comment ?></textarea>
-                        </p>
                     </div>
                 </div>
 
-                <div class="panel <?= $reg->u18 && $reg->u18_letter ? 'panel-danger' : 'panel-success' ?>">
+                <div class="panel <?= $reg->u18 && !$reg->u18_letter ? 'panel-danger' : 'panel-success' ?>">
                     <div class="panel-heading">
                         <h3 class="panel-title">Aufsichtsperson</h3>
                     </div>
@@ -94,7 +91,7 @@
             </div>
             <div class="col-md-6">
 
-                <div class="panel <?= $reg->is_helper() ? 'panel-primary' : 'panel-default' ?>">
+                <div class="panel <?= !$reg->is_attendee() ? 'panel-primary' : 'panel-default' ?>">
                     <div class="panel-heading">
                         <h3 class="panel-title"><?= $reg->status ?></h3>
                     </div>
@@ -108,7 +105,7 @@
                     </div>
                 </div>
 
-                <div class="panel panel-primary">
+                <div class="panel <?= $reg->has_lodging ? 'panel-primary' : 'panel-default' ?>">
                     <div class="panel-heading">
                         <h3 class="panel-title">Schlafraum</h3>
                     </div>
@@ -126,7 +123,7 @@
                         <h3 class="panel-title">Essenszeit</h3>
                     </div>
                     <div class="panel-body">
-                         <?php if( $reg->meal ): ?>
+                         <?php if( $reg->has_meal ): ?>
                              <?= $reg->print_meal_button( "EarlyEater" ); ?>
                              <?= $reg->print_meal_button( "LaterEater" ); ?>
                              <?= $reg->print_meal_button( "PrivEater" ); ?>
@@ -138,6 +135,16 @@
 
                 <?php //var_dump($reg); ?>
 
+            </div>
+        </div>
+
+
+        <div class="panel <?= $reg->comment ? 'panel-primary' : 'panel-default' ?>">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kommentar</h3>
+            </div>
+            <div class="panel-body" style="padding: .5em">
+                 <textarea type="text" class="form-control" placeholder="Ohne Kommentar" cols="70" rows="2" name="comment"><?= $reg->comment ?></textarea>
             </div>
         </div>
 

@@ -45,26 +45,24 @@ class Reg
         /*
          * volunteer/helper info
          */
+        // area
         $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
         if( $row->{FIELDS['label']} == 'Freiperson' ) $this->area = '';
-        if (!$this->area) {
-            $this->status = 'Teilnehmer';
-        } else {
-            $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
-        }
-
+        // status
+        $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
+        if (!$this->area) $this->status = 'Teilnehmer';
+        if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
 
         /*
          * lodging
          */
         $this->has_lodging = in_array($this->registration, ['attendee', 'reduced']);
         $this->external_lodging = $row->{FIELDS['external-housing']} == 'ExternalHousing';
-        $this->room_id = (int) $row->rg_assigned_roomID;
+        $this->room_id = $row->rg_assigned_roomID;
 
         if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
             $this->room_id = 0;
         }
-
 
         /*
          * meals
@@ -99,6 +97,7 @@ class Reg
         global $db;
 
         $a_out = array();
+        // var_dump($a_in); die();
 
         // Page 2
         if( isset($a_in['firstname']) )     $a_out['rg_firstname'] = $a_in['firstname'];
@@ -111,36 +110,25 @@ class Reg
         if( isset($a_in['state']) )         $a_out['rg_state'] = $a_in['state'];
         if( isset($a_in['country']) )       $a_out['rg_country'] = $a_in['country'];
         if( isset($a_in['comment']) )       $a_out['rg_payment_comments'] = $a_in['comment'];
-        if( isset($a_in['firstname']) ) {
-            $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : NULL;
-        }
+        if( $this->u18 )
+            $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : null;
 
-        /*
-         * guardian
-         */
+        // guardian
         if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
         if( isset($a_in['guardian_id']) ) $a_out['rg_customfield18'] = $a_in['guardian_id'];
 
-        /*
-         * volunteer/helper info
-         */
+        // volunteer/helper info
         if( isset($a_in['label']) )        $a_out[FIELDS['label']] = $a_in['label'];
         if( isset($a_in['area_private']) ) $a_out[FIELDS['area-private']] = $a_in['area_private'];
 
-        /*
-         * lodging
-         */
+        // lodging
         if( isset($a_in['room_id']) )      $a_out['rg_assigned_roomID'] = $a_in['room_id'];
 
-        /*
-         * meals
-         */
+        // meals
         if( isset($a_in['food_time']) )    $a_out[FIELDS['food-time']] = $a_in['food_time'];
 
 
-        /*
-         * arrival
-         */
+        // arrival
         if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
 
 
@@ -161,6 +149,14 @@ class Reg
             $disabled = true;
         } elseif( $meal !== 'PrivEater' && $this->has_food_priv ) {
             $disabled = true;
+        } elseif( $meal == 'LaterEater' && !$this->meal ) {
+
+        }
+
+        // Checked?
+        $checked = false;
+        if( $this->meal == $meal || ($meal == 'LaterEater' && !$this->meal) ) {
+            $checked = true;
         }
 
         return sprintf('<div class="radio %s"><label>
@@ -168,7 +164,7 @@ class Reg
                         </label></div>',
                 $disabled ? 'disabled text-muted' : '',
                 $meal,
-                $this->meal == $meal ? 'checked' : '',
+                $checked ? 'checked' : '',
                 $disabled ? 'disabled="disabled"' : '',
                 $label
         );

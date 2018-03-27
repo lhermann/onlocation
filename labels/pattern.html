@@ -15,10 +15,6 @@
     <link rel="stylesheet" href="../fontawsome/css/font-awesome.css" media="all">
 
     <style>
-        * {
-            /*box-sizing: border-box;*/
-        }
-
         html {
             font-size: 8pt;
             font-family: "Open Sans", sans-serif;
@@ -28,13 +24,15 @@
             text-align: center;
         }
 
-        small {
-            font-size: 80%;
+        h1,
+        .meta,
+        .status-box {
+            margin-bottom: 1em;
         }
 
+
         h1 {
-            font-size: 14pt;
-            padding-bottom: .2em;
+            font-size: 16pt;
         }
         .firstname {}
         .lastname {font-weight: 300;}
@@ -52,19 +50,17 @@
         }
         .area {
             font-size: 6pt;
+            font-weight: 400;
         }
 
 
         .meta {
-            padding: .8em 0;
-            display: flex;
-            justify-content: space-between;
+            /*padding: .8em 0;*/
+            /*display: flex;*/
+            /*justify-content: space-between;*/
         }
-        .meta__item {
-            /*width: 50%;*/
-            /*display: inline-block;*/
-            text-align: center;
-        }
+        .meta__left { float: left; }
+        /*.meta__right { float: right; }*/
 
 
         .comment {
@@ -102,11 +98,11 @@
             <br><span class="lastname">%%LASTNAME%%</span>
         </h1>
         <div class="meta">
-            <div class="meta__item text-left">
+            <div class="meta__left text-left">
                 <span class="icon-box"><span class="fa fa-bed"></span></span>
                 %%ROOM%%
             </div><!--
-         --><div class="meta__item text-right food %%FOOD-CLASS%%">
+         --><div class="meta__right text-right food %%FOOD-CLASS%%">
                 <span class="icon-box"><span class="fa fa-cutlery"></span></span>
                 <span class="icon-box"><span class="fa fa-cutlery"></span></span>
             </div>
