@@ -3,15 +3,9 @@
 ##
 # Generate YiM Label
 #
-# Arguments:
-# print.sh NAME POSITION ROOM FOOD COMMENT
-#
-# MEAL ***/early/late/-
-# COMMENT:
-#   U18 / Aufsichtsperson: Lukas Hermann (A2.201)
-#   English Translation
-#
-# e.g. ./print.sh "Lukas" "TL" "2" "-" "Liz"
+# Test commands:
+# /usr/local/bin/weasyprint -s style.css ../labels/src/8262.html ../labels/pdf/8262.pdf
+# sudo -u www-data php triggerprint.php
 
 
 # Get user input

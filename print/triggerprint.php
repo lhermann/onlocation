@@ -3,8 +3,15 @@
  * This script runs 20 times in 60 seconds
  */
 
-// /Applications/MAMP/bin/php/php7.0.13/bin/php -d display_errors triggerprint.php
-// /usr/bin/php -d display_errors /var/www/scripts/print/triggerprint.php
+/*
+ * Cron Script:
+ * * * * * * www-data /usr/bin/php /var/www/onlocation/print/triggerprint.php
+ */
+
+/*
+ * Test commands:
+ * sudo -u www-data /usr/bin/php /var/www/onlocation/print/triggerprint.php
+ */
 
 $root = dirname(__DIR__);
 require_once($root."/config.php");

@@ -8,3 +8,4 @@ info.php
 config.php
 labels/src/*.html
 labels/pdf/*.pdf
+*.log
