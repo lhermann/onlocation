@@ -15,89 +15,105 @@
     <link rel="stylesheet" href="../fontawsome/css/font-awesome.css" media="all">
 
     <style>
-        html {
-            font-size: 8pt;
-            font-family: "Roboto", sans-serif;
-            padding: 3mm 3mm 0;
+        * {
+            /*box-sizing: border-box;*/
         }
 
-        h1 {
-            font-size: 11pt;
+        html {
+            font-size: 8pt;
+            font-family: "Open Sans", sans-serif;
+            font-weight: 300;
             line-height: 1;
-            padding-bottom: .2em;
+            padding: 3mm 3mm 0;
+            text-align: center;
         }
 
         small {
             font-size: 80%;
         }
 
-        .header,
-        .body {
-            margin-bottom: .8em;
+        h1 {
+            font-size: 14pt;
+            padding-bottom: .2em;
+        }
+        .firstname {}
+        .lastname {font-weight: 300;}
+
+
+        .status-box {
+            /*border: 2px solid black;*/
+            padding: .3em .2em .5em;
+            background-color: black;
+            color: white;
+        }
+        .status {
+            font-size: 12pt;
+            font-weight: 600;
+        }
+        .area {
+            font-size: 6pt;
         }
 
-        .body {
-            border: 1px solid black;
-            padding: .8em .2em;
-        }
 
-        .body__item {
-            width: 50%;
-            display: inline-block;
+        .meta {
+            padding: .8em 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .meta__item {
+            /*width: 50%;*/
+            /*display: inline-block;*/
             text-align: center;
         }
+
+
         .comment {
             font-size: 80%;
         }
-        .food {
 
-        }
-        .food__box,
-        .food__text {
+        .text-left {text-align: left;}
+        .text-right {text-align: right;}
+        .icon-box {
+            font-size: 80%;
+            border: 2px solid black;
+            background-color: black;
+            color: white;
+            width: 1.5em;
+            /*height: 1.5em;*/
+            line-height: 1.5em;
+            text-align: center;
             display: inline-block;
         }
-        .food__text {
-            padding: 0 .5em;
+
+
+        .food--early .icon-box:last-child,
+        .food--late .icon-box:first-child,
+        .food--none .icon-box {
+            border: 2px solid black;
+            background-color: white;
         }
-        .food__box {
-            color: white;
-            font-size: 1.5em;
-            line-height: 18px;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #000;
-            vertical-align: bottom;
-        }
-        .food--early .food__box:not(:last-child),
-        .food--late .food__box:last-child {
-            color: black;
-            background-color: black;
-        }
-        .food--priv .food__box {
-            background-color: black;
-        }
-        /*.food--none .food__text {display: none;}*/
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <h1>%%NAME%%</h1>
-            <p class="volunteer"><span class="fa fa-user"></span> %%STATUS%%</p>
-        </div>
-        <div class="body">
-            <div class="body__item">
-                <span class="fa fa-bed"></span> Raum
-                <br><strong>%%ROOM%%</strong>
+        <h1>
+            <span class="firstname">%%FIRSTNAME%%</span>
+            <br><span class="lastname">%%LASTNAME%%</span>
+        </h1>
+        <div class="meta">
+            <div class="meta__item text-left">
+                <span class="icon-box"><span class="fa fa-bed"></span></span>
+                %%ROOM%%
             </div><!--
-         --><div class="body__item">
-                <span class="fa fa-cutlery"></span> %%FOOD%%
-                <div class="food %%FOOD-CLASS%%">
-                    <div class="food__box">*</div>
-                    <div class="food__box">*</div>
-                </div>
+         --><div class="meta__item text-right food %%FOOD-CLASS%%">
+                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
+                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
             </div>
+        </div>
+        <div class="status-box">
+            <p class="status">%%STATUS%%</p>
+            <span class="area">%%AREA%%</span>
         </div>
         <div class="footer">
             <p class="comment">%%COMMENT%%</p>

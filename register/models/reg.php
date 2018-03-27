@@ -233,13 +233,17 @@ class Reg
         $patterns = array();
         $replacements = array();
 
-        $patterns[0] = '/%%NAME%%/';
-        $replacements[0] = $this->name();
+        $patterns[0] = '/%%FIRSTNAME%%/';
+        $replacements[0] = $this->firstname;
+
+        $patterns[11] = '/%%LASTNAME%%/';
+        $replacements[11] = $this->lastname;
 
         $patterns[1] = '/%%STATUS%%/';
         $replacements[1] = $this->status;
-        if($this->status !== 'Teilnehmer') $replacements[1] .= ' &ndash; '.$this->area;
-        // if( $this->state == 'BW' && $this->year >= 1990 ) $replacements[1] .= ' &middot;';
+
+        $patterns[12] = '/%%AREA%%/';
+        $replacements[12] = $this->status !== 'Teilnehmer' ? $this->area : '';
 
         $room = $db->get_single_row($db->rooms, 'id', $this->room_id);
         $patterns[2] = '/%%ROOM%%/';

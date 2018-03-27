@@ -30,8 +30,8 @@
                 <h2>Druckvorschau</h2>
                 <style>
                     .label-iframe {
-                        width: 59mm;
-                        height: 40.5mm;
+                        width: 62mm;
+                        height: 50mm;
                         overflow: hidden;
                         border: 2px solid green;
                         border-radius: 5px;
