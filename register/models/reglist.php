@@ -16,20 +16,28 @@ class Reglist
     {
         global $db;
         if ( isset($route->query['s_regid']) && $route->query['s_regid'] ) {
+
             $this->search_key = 's_regid';
             $this->search_value = $route->query['s_regid'];
             $rows[] = $db->search_regid($route->query['s_regid']);
             if( $this->list[0] == null ) $this->list = [];
+
         } elseif ( isset($route->query['s_name']) && $route->query['s_name'] ) {
+
             $this->search_key = 's_name';
             $this->search_value = $route->query['s_name'];
             $rows = $db->search_name($route->query['s_name']);
+
         } elseif ( isset($route->query['regid']) && $route->query['regid'] ) {
+
             $this->search_key = 's_regid';
             $this->search_value = $route->query['regid'];
             $rows[] = $db->search_regid($route->query['regid']);
+
         } else {
+
             $rows = array();
+
         }
 
         foreach ($rows as $key => $row) {

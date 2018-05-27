@@ -6,15 +6,13 @@
 
     <title>Label</title>
 
+    <link rel="stylesheet" href="../fontawsome/css/font-awesome.css" media="all">
+
     <style>
         * {
             margin: 0;
         }
-    </style>
 
-    <link rel="stylesheet" href="../fontawsome/css/font-awesome.css" media="all">
-
-    <style>
         html {
             font-size: 8pt;
             font-family: "Open Sans", sans-serif;
@@ -23,26 +21,18 @@
             padding: 3mm 3mm 0;
             text-align: center;
         }
-
-        h1,
-        .meta,
-        .status-box {
-            margin-bottom: 1em;
-        }
-
-
         h1 {
             font-size: 16pt;
+            margin-bottom: 1em;
         }
         .firstname {}
         .lastname {font-weight: 300;}
-
-
         .status-box {
             padding: .5em .2em .5em;
             background-color: black;
             color: white;
             line-height: 1.2;
+            margin-top: 6px;
         }
         .status {
             font-size: 12pt;
@@ -51,35 +41,44 @@
         .area {
             font-weight: 400;
         }
-
-
-        .meta {}
         .meta__left { float: left; }
-        /*.meta__right { float: right; }*/
-
-
         .comment {
             font-size: 80%;
         }
-
         .text-left {text-align: left;}
         .text-right {text-align: right;}
         .icon-box {
             font-size: 80%;
             border: 2px solid black;
-            background-color: black;
-            color: white;
             width: 1.5em;
-            /*height: 1.5em;*/
             line-height: 1.5em;
             text-align: center;
             display: inline-block;
+            background-color: black;
+            color: white;
         }
-
-
-        .food--early .icon-box:last-child,
-        .food--late .icon-box:first-child,
-        .food--none .icon-box {
+        .food {
+            display: table;
+            width: calc(100% + 12px);
+            table-layout: fixed;
+            border-spacing: 6px;
+            margin: 0 -6px;
+        }
+        .food-item {
+            display: table-cell;
+            border: 2px solid black;
+            padding: 3px 0;
+            margin-left: 6px;
+        }
+        .food.breakfast .food-item:nth-child(1),
+        .food.lunch .food-item:nth-child(2),
+        .food.dinner .food-item:nth-child(3), {
+            background-color: white;
+            color: black;
+        }
+        .food-early .icon-box:last-child,
+        .food-late .icon-box:first-child,
+        .food-none .icon-box {
             border: 2px solid black;
             background-color: white;
         }
@@ -92,19 +91,18 @@
             <span class="firstname">%%FIRSTNAME%%</span>
             <br><span class="lastname">%%LASTNAME%%</span>
         </h1>
-        <div class="meta">
-            <div class="meta__left text-left">
-                <span class="icon-box"><span class="fa fa-bed"></span></span>
-                %%ROOM%%
-            </div><!--
-         --><div class="meta__right text-right food %%FOOD-CLASS%%">
-                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
-                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
-            </div>
+        <div class="text-left">
+            <span class="icon-box"><span class="fa fa-bed"></span></span>
+            Unterkunft: %%ROOM%%
         </div>
         <div class="status-box">
             <p class="status">%%STATUS%%</p>
             <span class="area">%%AREA%%</span>
+        </div>
+        <div class="food %%FOOD-CLASS%% breakfast">
+            <div class="food-item icon-box"><span class="fa fa-cutlery"></span></div>
+            <div class="food-item icon-box">%%FOOD%%</div>
+            <div class="food-item icon-box"><span class="fa fa-cutlery"></span></div>
         </div>
         <div class="footer">
             <p class="comment">%%COMMENT%%</p>

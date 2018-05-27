@@ -15,7 +15,7 @@ global $route;
     <title>OnLocation >> <?= ucfirst($route->get_page()) ?></title>
 
     <!-- Bootstrap core CSS -->
-    <link href="/register/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/register/assets/css/bootstrap.min.css?v=4.1.1" rel="stylesheet">
 
     <style>
         .table td { vertical-align: middle !important; }
@@ -34,40 +34,4 @@ global $route;
 
 <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">On Location</a>
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li <?= $route->is_page('search') ? 'class="active"' : '' ?>>
-                        <a href="<?= $route->page_url('search') ?>">Suche</a>
-                    </li>
-                    <li <?= $route->is_page('info') ? 'class="active"' : '' ?>>
-                        <a href="<?= $route->page_url('info') ?>">Info</a>
-                    </li>
-                    <li <?= $route->is_page('print') ? 'class="active"' : '' ?>>
-                        <a href="<?= $route->page_url('print') ?>">Drucken</a>
-                    </li>
-                </ul>
-                <p class="navbar-text navbar-right">IP: <?= $_SERVER['REMOTE_ADDR'] ?></p>
-                <p class="navbar-text navbar-right">RegID: <?= $route->get_regid() ?></p>
-                <!-- <div class="nav navbar-nav navbar-right">
-                    <ul class="nav navbar-nav">
-                        <li><p class="navbar-text">Drucker:</p></li>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                    </ul>
-                </div> -->
-            </div><!--/.nav-collapse -->
-        </div>
-    </nav>
+    <?php require('nav.php'); ?>

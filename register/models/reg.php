@@ -16,14 +16,16 @@ class Reg
         }
         if(!$row) return;
 
+        // Default values
         $this->id           = $row->rg_registrationID;
         $this->date_arrived = $row->rg_date_arrived;
         $this->firstname    = $row->rg_firstname;
         $this->lastname     = $row->rg_lastname;
         $this->email        = $row->rg_email;
         $this->gender       = $row->rg_gender;
-        $this->translation  = (bool) $row->{FIELDS['translation']};
-        $this->birthdate    = strtotime( $row->rg_birthday.'-'.$row->rg_birthmonth.'-'.$row->rg_birthyear);
+        $this->birthdate    = strtotime(
+            $row->rg_birthday.'-'.$row->rg_birthmonth.'-'.$row->rg_birthyear
+        );
         $this->year         = $row->rg_birthyear;
         $this->addr         = $row->rg_addr;
         $this->zip          = $row->rg_zip;
@@ -31,50 +33,68 @@ class Reg
         $this->state        = $row->rg_state;
         $this->country      = $row->rg_country;
         $this->to_pay       = $row->rg_amount_to_pay;
-        $this->paid         = $row->rg_amount_to_pay === '0.00' || $row->rg_amount_received !== null;
+        $this->paid         =
+            $row->rg_amount_to_pay === '0.00'
+            || $row->rg_amount_received !== null;
         $this->comment      = $row->rg_payment_comments;
-        $this->registration = $row->{FIELDS['registration']};
-        $this->t_shirt      = $row->{FIELDS['t-shirt']};
+        $this->status       = "Teilnehmer";
 
-        $this->u18           = $this->is_under18();
-        $this->guardian_id   = $row->{FIELDS['guardian_id']};
-        $this->guardian_name = $row->{FIELDS['guardian_name']};
-        $this->has_guardian  = $this->has_guardian_set();
-        $this->u18_letter    = $row->rg_parental_letter_received !== null;
 
-        /*
-         * volunteer/helper info
-         */
-        // area
-        $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
-        // status
-        $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
-        if (!$this->area || $this->status == 'Freiperson') $this->status = 'Teilnehmer';
-        if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
-        // remove area of some stati
-        if(in_array($this->status, ['Teilnehmer', 'TTBW', 'Medical Team']))
-            $this->area = '';
-
-        /*
-         * lodging
-         */
-        $this->has_lodging = in_array($this->registration, ['attendee', 'reduced']);
-        $this->external_lodging = $row->{FIELDS['external-housing']} == 'ExternalHousing';
-        $this->room_id = $row->rg_assigned_roomID;
-
-        if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
-            $this->room_id = 0;
+        // custom fields
+        for ($i = 1; $i <= 30; $i++) {
+            $this->{'customfield' . $i} = $row->{'rg_customfield' . $i};
+            if(CUSTOMFIELDS[$i]) {
+                $this->{CUSTOMFIELDS[$i]} = $row->{'rg_customfield' . $i};
+            }
         }
 
-        /*
-         * meals
-         */
-        // if they booked food then:
-        $this->has_meal = in_array($this->registration, ['attendee', 'reduced']);
-        $this->has_food_priv = $this->is_helper() || (bool) $row->{FIELDS['food-priv']};
-        $this->meal = $row->{FIELDS['food-time']};
-        if( $this->has_meal && $this->has_food_priv ) {
-            $this->meal = 'PrivEater';
+        // guardian
+        if( MODULES['guardian'] ) {
+            $this->guardian_id   = $row->{FIELDS['guardian_id']};
+            $this->guardian_name = $row->{FIELDS['guardian_name']};
+            $this->u18           = $this->is_under18();
+            $this->has_guardian  = $this->has_guardian_set();
+            $this->u18_letter    = $row->rg_parental_letter_received !== null;
+        }
+
+        if (MODULES['yim']) {
+            $this->translation  = (bool) $row->{FIELDS['translation']};
+            $this->t_shirt      = $row->{FIELDS['t-shirt']};
+
+            /*
+             * volunteer/helper info
+             */
+            // area
+            $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
+            // status
+            $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
+            if (!$this->area || $this->status == 'Freiperson') $this->status = 'Teilnehmer';
+            if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
+            // remove area of some stati
+            if(in_array($this->status, ['Teilnehmer', 'TTBW', 'Medical Team']))
+                $this->area = '';
+
+            /*
+             * lodging
+             */
+            $this->has_lodging = in_array($this->registration, ['attendee', 'reduced']);
+            $this->external_lodging = $row->{FIELDS['external-housing']} == 'ExternalHousing';
+            $this->room_id = $row->rg_assigned_roomID;
+
+            if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
+                $this->room_id = 0;
+            }
+
+            /*
+             * meals
+             */
+            // if they booked food then:
+            $this->has_meal = in_array($this->registration, ['attendee', 'reduced']);
+            $this->has_food_priv = $this->is_helper() || (bool) $row->{FIELDS['food-priv']};
+            $this->meal = $row->{FIELDS['food-time']};
+            if( $this->has_meal && $this->has_food_priv ) {
+                $this->meal = 'PrivEater';
+            }
         }
 
     }
@@ -85,6 +105,14 @@ class Reg
 
     private function has_guardian_set() {
         return $this->guardian_id && $this->guardian_name || !$this->u18 ? true : false;
+    }
+
+    public function has_lodging() {
+        return $this->lodging && $this->lodging !== 'external';
+    }
+
+    public function has_meal() {
+        return in_array($this->registration, ['attendee-2meals', 'attendee-3meals']);
     }
 
     public function is_attendee() {
@@ -99,39 +127,57 @@ class Reg
         global $db;
 
         $a_out = array();
-        // var_dump($a_in); die();
+        // var_dump($a_in);
+
+        unset($a_in['p']);
+        unset($a_in['printer']);
+        unset($a_in['regid']);
+        unset($a_in['update_db']);
+        unset($a_in['target']);
+
+        foreach ($a_in as $key => $value) {
+            if($key === 'comment') {
+                $a_out['rg_payment_comments'] = $value;
+            } elseif($i = array_search($key, CUSTOMFIELDS)) {
+                $a_out['rg_customfield'.$i] = $value;
+            } else {
+                $a_out['rg_'.$key] = $value;
+            }
+        }
+
+        // var_dump($a_out); die();
 
         // Page 2
-        if( isset($a_in['firstname']) )     $a_out['rg_firstname'] = $a_in['firstname'];
-        if( isset($a_in['lastname']) )      $a_out['rg_lastname'] = $a_in['lastname'];
-        if( isset($a_in['gender']) )        $a_out['rg_gender'] = $a_in['gender'];
-        if( isset($a_in['translation']) )   $a_out['rg_customfield7'] = ( $a_in['translation'] == 'yes' ? 'NeedEngTranslation' : NULL );
-        if( isset($a_in['addr']) )          $a_out['rg_addr'] = $a_in['addr'];
-        if( isset($a_in['zip']) )           $a_out['rg_zip'] = $a_in['zip'];
-        if( isset($a_in['city']) )          $a_out['rg_city'] = $a_in['city'];
-        if( isset($a_in['state']) )         $a_out['rg_state'] = $a_in['state'];
-        if( isset($a_in['country']) )       $a_out['rg_country'] = $a_in['country'];
-        if( isset($a_in['comment']) )       $a_out['rg_payment_comments'] = $a_in['comment'];
-        if( $this->u18 )
-            $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : null;
+        // if( isset($a_in['firstname']) )     $a_out['rg_firstname'] = $a_in['firstname'];
+        // if( isset($a_in['lastname']) )      $a_out['rg_lastname'] = $a_in['lastname'];
+        // if( isset($a_in['gender']) )        $a_out['rg_gender'] = $a_in['gender'];
+        // if( isset($a_in['translation']) )   $a_out['rg_customfield7'] = ( $a_in['translation'] == 'yes' ? 'NeedEngTranslation' : NULL );
+        // if( isset($a_in['addr']) )          $a_out['rg_addr'] = $a_in['addr'];
+        // if( isset($a_in['zip']) )           $a_out['rg_zip'] = $a_in['zip'];
+        // if( isset($a_in['city']) )          $a_out['rg_city'] = $a_in['city'];
+        // if( isset($a_in['state']) )         $a_out['rg_state'] = $a_in['state'];
+        // if( isset($a_in['country']) )       $a_out['rg_country'] = $a_in['country'];
+        // if( isset($a_in['comment']) )       $a_out['rg_payment_comments'] = $a_in['comment'];
+        // if( $this->u18 && !isset($a_in['date_arrived']) )
+        //     $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : null;
 
-        // guardian
-        if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
-        if( isset($a_in['guardian_id']) ) $a_out['rg_customfield18'] = $a_in['guardian_id'];
+        // // guardian
+        // if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
+        // if( isset($a_in['guardian_id']) ) $a_out['rg_customfield18'] = $a_in['guardian_id'];
 
-        // volunteer/helper info
-        if( isset($a_in['label']) )        $a_out[FIELDS['label']] = $a_in['label'];
-        if( isset($a_in['area_private']) ) $a_out[FIELDS['area-private']] = $a_in['area_private'];
+        // // volunteer/helper info
+        // if( isset($a_in['label']) )        $a_out[FIELDS['label']] = $a_in['label'];
+        // if( isset($a_in['area_private']) ) $a_out[FIELDS['area-private']] = $a_in['area_private'];
 
-        // lodging
-        if( isset($a_in['room_id']) )      $a_out['rg_assigned_roomID'] = $a_in['room_id'];
+        // // lodging
+        // if( isset($a_in['room_id']) )      $a_out['rg_assigned_roomID'] = $a_in['room_id'];
 
-        // meals
-        if( isset($a_in['food_time']) )    $a_out[FIELDS['food-time']] = $a_in['food_time'];
+        // // meals
+        // if( isset($a_in['food_time']) )    $a_out[FIELDS['food-time']] = $a_in['food_time'];
 
 
-        // arrival
-        if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
+        // // arrival
+        // if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
 
 
         return $db->update_row( $db->main, $this->id, $a_out );
@@ -267,6 +313,10 @@ class Reg
                 $replacements[4] = 'Kein Essen';
                 break;
         }
+        if(!$this->has_meal) {
+            $replacements[3] = 'food--none';
+            $replacements[4] = 'Kein Essen';
+        }
 
         $patterns[5] = '/%%COMMENT%%/';
         $replacements[5] = "";
@@ -302,6 +352,51 @@ class Reg
             $this->id
         ];
         $db->insert_row($db->queue, $cols, $values);
+    }
+
+    public function distribute_equally($field_id, $options = []) {
+        global $db;
+
+        $col = $db->get_col_with_count("rg_customfield".$field_id);
+        foreach ($col as $option) {
+            $option->selected = false;
+            if($key = array_search($option->slug, $options)) {
+                unset($options[$key]);
+            }
+        }
+        foreach ($options as $option) {
+            $col[] = (object)["slug" => $option, "count" => 0, "selected" => false];
+        }
+
+        $thisfield = $this->{'customfield'.$field_id};
+        if ($thisfield === null) {
+            $col[count($col)-1]->selected = true;
+        } else {
+            foreach ($col as $option) {
+                if($option->slug === $thisfield) $option->selected = true;
+            }
+        }
+
+        return $col;
+    }
+
+    public function print_button_with_count( $slug, $field_id ) {
+        global $db;
+
+        $col = $db->get_col_with_count("rg_customfield".$field_id);
+
+        foreach ($col as $option) {
+            if($option->slug === $slug) break;
+            $option = null;
+        }
+        if(!$col || !$option) $option = (object)["slug" => $slug, "count" => 0];
+
+        printf('<input class="form-check-input" type="radio" name="%1$s" id="%2$s" value="%2$s" %4$s><label class="form-check-label mr-4" for="%2$s">[%3$s] %2$s</label>',
+               'customfield'.$field_id,
+               $slug,
+               $option->count,
+               $this->{'customfield'.$field_id} === $slug ? 'checked' : ''
+        );
     }
 
 }
