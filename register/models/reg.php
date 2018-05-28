@@ -37,7 +37,6 @@ class Reg
             $row->rg_amount_to_pay === '0.00'
             || $row->rg_amount_received !== null;
         $this->comment      = $row->rg_payment_comments;
-        $this->status       = "Teilnehmer";
 
 
         // custom fields
@@ -105,6 +104,10 @@ class Reg
 
     private function has_guardian_set() {
         return $this->guardian_id && $this->guardian_name || !$this->u18 ? true : false;
+    }
+
+    public function status() {
+        return $this->registration === "day-ticket" ? "Tagesgast" : "Teilnehmer";
     }
 
     public function has_lodging() {
@@ -284,55 +287,59 @@ class Reg
         $replacements[11] = $this->lastname;
 
         $patterns[1] = '/%%STATUS%%/';
-        $replacements[1] = $this->status;
+        $replacements[1] = $this->label ?: $this->status();
 
-        $patterns[12] = '/%%AREA%%/';
-        $replacements[12] = $this->status !== 'Teilnehmer' ? $this->area : '';
+        $patterns[12] = '/%%SUBSTATUS%%/';
+        $replacements[12] =
+            $this->registration === 'day-ticket'
+            ? str_replace(',', ', ', $this->tagesgast)
+            : "";
 
-        $room = $db->get_single_row($db->rooms, 'id', $this->room_id);
         $patterns[2] = '/%%ROOM%%/';
-        $replacements[2] = $this->room_id ? $room->name : 'Extern';
+        switch ($this->lodging) {
+            case 'external':
+            case null:
+                $replacements[2] = 'Extern/Keine'; break;
+            case 'camping':
+                $replacements[2] = 'Campingplatz'; break;
+            default:
+                $replacements[2] = 'Intern'; break;
+        }
 
         $patterns[3] = '/%%FOOD-CLASS%%/';
         $patterns[4] = '/%%FOOD%%/';
-        switch ($this->meal) {
-            case 'PrivEater':
-                $replacements[3] = 'food--priv';
-                $replacements[4] = 'Essen';
-                break;
-            case 'EarlyEater':
-                $replacements[3] = 'food--early';
-                $replacements[4] = 'Frühesser';
-                break;
-            case 'LaterEater':
-                $replacements[3] = 'food--late';
-                $replacements[4] = 'Spätesser';
-                break;
+        $replacements[4] = $this->essenszeit ?: 'Kein Essen';
+
+        switch ($this->registration) {
+            case 'attendee-2meals':
+                $replacements[3] = 'lunch dinner'; break;
+            case 'attendee-3meals':
+                $replacements[3] = 'breakfast lunch dinner'; break;
             default:
-                $replacements[3] = 'food--none';
-                $replacements[4] = 'Kein Essen';
-                break;
-        }
-        if(!$this->has_meal) {
-            $replacements[3] = 'food--none';
-            $replacements[4] = 'Kein Essen';
+                $replacements[3] = ''; break;
         }
 
         $patterns[5] = '/%%COMMENT%%/';
         $replacements[5] = "";
-        if( $this->translation ) {
-            $replacements[5] .= "Englische Übersetung";
+        if (MODULES['yim']) {
+            if( $this->translation ) {
+                $replacements[5] .= "Englische Übersetung";
+            }
+            if( $this->u18 ) {
+                $guardian = new Reg($this->guardian_id);
+                $guardian_room = $db->get_single_row($db->rooms, 'id', $guardian->room_id);
+                $replacements[5] .= sprintf( "U18 / Aufsichtsperson:<br>[%s] %s (%s)",
+                    $guardian->id,
+                    $guardian->name(),
+                    $guardian->room_id ? $guardian_room->name : 'Extern'
+                );
+            }
         }
-        if( $this->u18 ) {
-            $guardian = new Reg($this->guardian_id);
-            $guardian_room = $db->get_single_row($db->rooms, 'id', $guardian->room_id);
-            $replacements[5] .= sprintf( "U18 / Aufsichtsperson:<br>[%s] %s (%s)",
-                $guardian->id,
-                $guardian->name(),
-                $guardian->room_id ? $guardian_room->name : 'Extern'
-            );
+        if (MODULES['josua']) {
+            $replacements[5] = "Kleingruppe: " . $this->gruppe;
         }
 
+        ksort($patterns); ksort($replacements);
         $file = preg_replace($patterns, $replacements, $file);
 
         // write file
@@ -360,9 +367,8 @@ class Reg
         $col = $db->get_col_with_count("rg_customfield".$field_id);
         foreach ($col as $option) {
             $option->selected = false;
-            if($key = array_search($option->slug, $options)) {
-                unset($options[$key]);
-            }
+            $key = array_search($option->slug, $options);
+            if($key !== null) unset($options[$key]);
         }
         foreach ($options as $option) {
             $col[] = (object)["slug" => $option, "count" => 0, "selected" => false];
@@ -371,6 +377,37 @@ class Reg
         $thisfield = $this->{'customfield'.$field_id};
         if ($thisfield === null) {
             $col[count($col)-1]->selected = true;
+        } else {
+            foreach ($col as $option) {
+                if($option->slug === $thisfield) $option->selected = true;
+            }
+        }
+
+        return $col;
+    }
+
+    public function distribute_fill_first($field_id, $options = [], $limit = 0, $default = null) {
+        global $db;
+
+        $col = $db->get_col_with_count("rg_customfield".$field_id);
+        foreach ($col as $option) {
+            $option->selected = false;
+            $key = array_search($option->slug, $options);
+            if($key !== null) unset($options[$key]);
+        }
+        var_dump($col, $options);
+        foreach ($options as $option) {
+            $col[] = (object)["slug" => $option, "count" => 0, "selected" => false];
+        }
+
+        $thisfield = $this->{'customfield'.$field_id} ?: $default;
+        if ($thisfield === null) {
+            foreach ($col as $option) {
+                if($limit > 0 && $col->count < $limit) {
+                    $option->selected = true;
+                    break;
+                }
+            }
         } else {
             foreach ($col as $option) {
                 if($option->slug === $thisfield) $option->selected = true;

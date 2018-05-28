@@ -63,8 +63,23 @@
 
         <?php if (MODULES['josua']): ?>
           <div class="card mb-3 border-primary">
-            <h4 class="card-header">Gruppe</h3>
+            <h4 class="card-header">Kleingruppen</h3>
             <div class="card-body">
+              <select name="gruppe" class="form-control">
+                <?php
+                  $options = range(1, 23);
+                  $options[] = "Ohne Gruppe";
+                  $fields = $reg->distribute_fill_first(7, $options, 20, 1);
+                  foreach ($fields as $field) {
+                    printf('<option value="%s" %s>[%s] %s</option>',
+                           $field->slug,
+                           $field->selected ? "selected" : "",
+                           $field->count,
+                           $field->slug
+                    );
+                  }
+                ?>
+              </select>
             </div>
           </div>
         <?php endif ?>
@@ -97,23 +112,48 @@
       </div>
       <div class="col-md-6">
 
-        <div class="card mb-3 border-primary">
-          <h4 class="card-header"><?= $reg->status ?></h3>
-          <div class="card-body form-inline">
-            <?php if (MODULES['yim']): ?>
-              <?php if ($reg->status == 'Standleiter'): ?>
-                Bereich: <strong><input type="text" class="form-control" value="<?= $reg->area ?>" name="area_private"></strong>
-              <?php else: ?>
-                Bereich: <strong><?= $reg->area ?: 'keiner' ?></strong>
+        <?php if (MODULES['guardian']): ?>
+          <div class="card mb-3 border-primary">
+            <h4 class="card-header"><?= $reg->status ?></h3>
+            <div class="card-body form-inline">
+              <?php if (MODULES['yim']): ?>
+                <?php if ($reg->status == 'Standleiter'): ?>
+                  Bereich: <strong><input type="text" class="form-control" value="<?= $reg->area ?>" name="area_private"></strong>
+                <?php else: ?>
+                  Bereich: <strong><?= $reg->area ?: 'keiner' ?></strong>
+                <?php endif ?>
               <?php endif ?>
-            <?php else: ?>
-              TEILNEHMERART!!!!
-            <?php endif ?>
-            <?php if (isset($reg->t_shirt)): ?>
-              <br>T-Shirt: <strong><?= $reg->t_shirt ?: 'nein' ?></strong>
+              <?php if (isset($reg->t_shirt)): ?>
+                <br>T-Shirt: <strong><?= $reg->t_shirt ?: 'nein' ?></strong>
+              <?php endif ?>
+            </div>
+          </div>
+        <?php endif ?>
+
+        <?php if (MODULES['josua']): ?>
+          <div class="card mb-3 border-primary">
+            <h4 class="card-header"><?= $reg->status() ?></h3>
+            <?php if ($reg->status() === "Teilnehmer"): ?>
+              <div class="card-body">
+                <select name="label" class="form-control">
+                  <?php
+                    $options = ["Teilnehmer", "Team", "Standleiter", "Sprecher", "Tagesgast"];
+                    $fields = $reg->distribute_fill_first(6, $options, null, "Teilnehmer");
+                    foreach ($fields as $field) {
+                      printf('<option value="%s" %s>[%s] %s</option>',
+                             $field->slug,
+                             $field->selected ? "selected" : "",
+                             $field->count,
+                             $field->slug
+                      );
+                    }
+                  ?>
+                </select>
+              </div>
             <?php endif ?>
           </div>
-        </div>
+        <?php endif ?>
+
 
         <div class="card mb-3 <?= $reg->has_lodging() ? 'border-primary' : '' ?>">
           <h4 class="card-header">Unterkunft</h3>
