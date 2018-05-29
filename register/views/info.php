@@ -69,13 +69,13 @@
                 <?php
                   $options = range(1, 23);
                   $options = array_map(function($el){return "Gruppe ".$el;}, $options);
-                  $options[] = "Ohne Gruppe";
+                  $options[] = "Keine";
                   $limits = array_merge(
                       array_fill_keys(range(0, 6), 20),
                       array_fill_keys(range(7, 22), 15),
                       [0]
                   );
-                  $fields = $reg->distribute_equally(7, $options, $limits, 'Ohne Gruppe');
+                  $fields = $reg->distribute_equally(7, $options, $limits, "Keine");
                   foreach ($fields as $field) {
                     printf('<option value="%s" %s>[%s%s] %s</option>',
                            $field->slug,
