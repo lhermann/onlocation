@@ -112,8 +112,9 @@ class Reg
         if( isset($a_in['state']) )         $a_out['rg_state'] = $a_in['state'];
         if( isset($a_in['country']) )       $a_out['rg_country'] = $a_in['country'];
         if( isset($a_in['comment']) )       $a_out['rg_payment_comments'] = $a_in['comment'];
-        if( $this->u18 )
-            $a_out['rg_parental_letter_received'] = isset($a_in['u18_letter']) ? date('Y-m-d') : null;
+        if( $this->u18 && isset($a_in['u18_letter']) )
+            $a_out['rg_parental_letter_received'] = date('Y-m-d');
+        //if( $this->u18 && !isset($a_in['date_arrived']) )
 
         // guardian
         if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
@@ -267,11 +268,15 @@ class Reg
                 $replacements[4] = 'Kein Essen';
                 break;
         }
+        if(!$this->has_meal) {
+            $replacements[3] = 'food--none';
+            $replacements[4] = 'Kein Essen';
+        }
 
         $patterns[5] = '/%%COMMENT%%/';
         $replacements[5] = "";
         if( $this->translation ) {
-            $replacements[5] .= "Englische Übersetung";
+            $replacements[5] .= "Englische Übersetzung";
         }
         if( $this->u18 ) {
             $guardian = new Reg($this->guardian_id);

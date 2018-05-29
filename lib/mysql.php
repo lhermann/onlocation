@@ -169,6 +169,7 @@ class DB
         switch ($status) {
             case 'Teilnehmer':
             case 'Volunteer':
+            case 'Standleiter':
                 $priority = 2;
                 break;
             case 'Mitarbeiter':
