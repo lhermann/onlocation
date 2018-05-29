@@ -67,12 +67,12 @@
             <div class="card-body">
               <select name="gruppe" class="form-control">
                 <?php
-                  $options = range(1, 23);
+                  $options = range(1, 18);
                   $options = array_map(function($el){return "Gruppe ".$el;}, $options);
                   $options[] = "Keine";
                   $limits = array_merge(
-                      array_fill_keys(range(0, 6), 20),
-                      array_fill_keys(range(7, 22), 15),
+                      array_fill_keys(range(0, 10), 20),
+                      array_fill_keys(range(11, 17), 15),
                       [0]
                   );
                   $fields = $reg->distribute_equally(7, $options, $limits, "Keine");
