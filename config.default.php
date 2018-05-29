@@ -16,10 +16,13 @@ define('DB_COLLATE',    '');
 /**
  * Settings
  */
+define('MODULES', [
+    'guardian'      => false,
+    'volunteer'     => false,
+    'yim'           => false,
+    'josua'         => true
+]);
 define('PRINTER1',  'Brother_QL-570');
-define('PRINTER2',  'Brother_QL-570');
-define('PRINTER3',  'Brother_QL-570');
-define('PRINTER4',  'Brother_QL-570');
 
 
 /**
