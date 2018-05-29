@@ -361,22 +361,62 @@ class Reg
         $db->insert_row($db->queue, $cols, $values);
     }
 
-    public function distribute_equally($field_id, $options = []) {
+    /**
+     * $filed_id  => rg_customfield ID
+     * $options   => array of slugs
+     * $limits    => array of limits, key matching $options
+     * $excludes  => array of slugs to exclude, keys don't matter
+     */
+    public function distribute_equally($field_id, $options = [], $limits = [], $excludes = []) {
         global $db;
 
+        // prepare vars
+        if(is_null($options)) $options = [];
+        if(is_null($limits)) $limits = [];
+        if(is_null($excludes)) $excludes = [];
+        if(!is_array($options)) $options = [$options];
+        if(!is_array($limits)) $limits = [$limits];
+        if(!is_array($excludes)) $excludes = [$excludes];
+
+        // get cols
         $col = $db->get_col_with_count("rg_customfield".$field_id);
+
+        // make sure that $options are among the result set
         foreach ($col as $option) {
             $option->selected = false;
             $key = array_search($option->slug, $options);
-            if($key !== null) unset($options[$key]);
-        }
-        foreach ($options as $option) {
-            $col[] = (object)["slug" => $option, "count" => 0, "selected" => false];
+            if($key !== null) {
+                unset($options[$key]);
+                $option->limit = isset($limits[$key]) ? $limits[$key] : 0;
+            }
         }
 
+        // add options if not of the result set
+        foreach ($options as $key => $option) {
+            $col[] = (object)[
+                "slug" => $option,
+                "count" => 0,
+                "selected" => false,
+                "limit" => isset($limits[$key]) ? $limits[$key] : 0
+            ];
+        }
+
+        // choose which col to select
         $thisfield = $this->{'customfield'.$field_id};
         if ($thisfield === null) {
-            $col[count($col)-1]->selected = true;
+            for ($i = count($col)-1; $i > 0;) {
+                if (in_array($col[$i]->slug, $excludes)) { // exlude
+                    $i--;
+                } elseif( // keep limit
+                    $col[$i]->limit > 0 &&
+                    $col[$i]->count >= $col[$i]->limit
+                ) {
+                    $i--;
+                } else {
+                    break;
+                }
+            }
+            $col[$i]->selected = true;
         } else {
             foreach ($col as $option) {
                 if($option->slug === $thisfield) $option->selected = true;

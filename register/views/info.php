@@ -68,13 +68,20 @@
               <select name="gruppe" class="form-control">
                 <?php
                   $options = range(1, 23);
+                  $options = array_map(function($el){return "Gruppe ".$el;}, $options);
                   $options[] = "Ohne Gruppe";
-                  $fields = $reg->distribute_fill_first(7, $options, 20, 1);
+                  $limits = array_merge(
+                      array_fill_keys(range(0, 6), 20),
+                      array_fill_keys(range(7, 22), 15),
+                      [0]
+                  );
+                  $fields = $reg->distribute_equally(7, $options, $limits, 'Ohne Gruppe');
                   foreach ($fields as $field) {
-                    printf('<option value="%s" %s>[%s] %s</option>',
+                    printf('<option value="%s" %s>[%s%s] %s</option>',
                            $field->slug,
                            $field->selected ? "selected" : "",
                            $field->count,
+                           $field->limit ? " &middot; limit ".$field->limit : "",
                            $field->slug
                     );
                   }
