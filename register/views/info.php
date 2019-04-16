@@ -97,13 +97,13 @@
             <div class="card-body">
               <?php if($reg->u18): ?>
                 <p class="lead text-info">
-                  <i class="far fa-times-circle text-danger"></i>&nbsp; Unter 18
+                  <i class="fas fa-exclamation-triangle"></i>&nbsp; Unter 18
                 </p>
                 <p>
                   <i class="fas fa-user"></i>&nbsp; [<?= $reg->guardian_id ?>] <?= $reg->guardian_name ?>
                 </p>
                 <p class="guardian-letter" data-toggle="buttons">
-                  <label class="btn btn-danger <?= $reg->u18_letter ? 'active' : '' ?>">
+                  <label class="btn <?= $reg->u18_letter ? 'btn-success active' : 'btn-danger' ?>">
                     <input type="checkbox" autocomplete="off" <?= $reg->u18_letter ? 'checked' : '' ?> name="u18_letter">&nbsp; Einverständniserklärung erhalten
                   </label>
                 </p>

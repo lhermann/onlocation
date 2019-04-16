@@ -148,12 +148,10 @@ class Reg
              * meals
              */
             // if they booked food then:
-            $this->has_meal = in_array($this->registration, ['attendee', 'reduced', 'child']);
             $this->has_food_priv = $this->is_helper() ?: (bool) $this->food_priv;
+            $this->has_meal = in_array($this->registration, ['attendee', 'reduced', 'child']) || $this->has_food_priv;
             $this->meal = $this->food_time;
-            if( $this->has_meal && $this->has_food_priv ) {
-                $this->meal = 'PrivEater';
-            }
+            if( $this->has_food_priv ) $this->meal = 'PrivEater';
         }
 
     }
@@ -175,7 +173,7 @@ class Reg
     }
 
     public function has_meal() {
-        return in_array($this->registration, ['attendee', 'reduced', 'child']);
+        return in_array($this->registration, ['attendee', 'reduced', 'child']) || $this->has_food_priv;
     }
 
     public function is_attendee() {

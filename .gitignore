@@ -13,5 +13,6 @@ labels/png/*.png
 /*.js
 *.csv
 *.bak
+*.swp
 
 brother_ql
