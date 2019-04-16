@@ -132,11 +132,11 @@ class Reg
     }
 
     public function has_lodging() {
-        return $this->lodging && $this->lodging !== 'external';
+        return $this->has_lodging && !$this->external_housing;
     }
 
     public function has_meal() {
-        return in_array($this->registration, ['attendee-2meals', 'attendee-3meals']);
+        return in_array($this->registration, ['attendee', 'reduced', 'child']);
     }
 
     public function is_attendee() {
@@ -229,7 +229,7 @@ class Reg
         global $db;
 
         $rooms = $db->get_rooms_with_count(
-            $this->status,
+            $this->label,
             $this->gender
         );
 
@@ -296,36 +296,66 @@ class Reg
         $patterns[12] = '/%%SUBSTATUS%%/';
         $replacements[12] =
             $this->registration === 'day-ticket'
-            ? str_replace(',', ', ', $this->tagesgast)
-            : "";
+            ? str_replace(',', ', ', $this->day_ticket)
+            : $this->area;
 
+
+        $room = $db->get_single_row($db->rooms, 'id', $this->room_id);
         $patterns[2] = '/%%ROOM%%/';
-        switch ($this->lodging) {
-            case 'external':
-            case null:
-                $replacements[2] = 'Extern/Keine'; break;
-            case 'camping':
-                $replacements[2] = 'Campingplatz'; break;
-            default:
-                $replacements[2] = 'Intern'; break;
-        }
+        $replacements[2] = $this->room_id ? $room->name : 'Extern';
+
+        // $patterns[2] = '/%%ROOM%%/';
+        // switch ($this->lodging) {
+        //     case 'external':
+        //     case null:
+        //         $replacements[2] = 'Extern/Keine'; break;
+        //     case 'camping':
+        //         $replacements[2] = 'Campingplatz'; break;
+        //     default:
+        //         $replacements[2] = 'Intern'; break;
+        // }
 
         $patterns[3] = '/%%FOOD-CLASS%%/';
         $patterns[4] = '/%%FOOD%%/';
-        $replacements[4] = $this->essenszeit ?: 'Kein Essen';
-
-        switch ($this->registration) {
-            case 'attendee-2meals':
-                $replacements[3] = 'lunch dinner'; break;
-            case 'attendee-3meals':
-                $replacements[3] = 'breakfast lunch dinner'; break;
+        switch ($this->meal) {
+            case 'PrivEater':
+                $replacements[3] = 'food--priv';
+                $replacements[4] = 'Essen';
+                break;
+            case 'EarlyEater':
+                $replacements[3] = 'food--early';
+                $replacements[4] = 'Frühesser';
+                break;
+            case 'LaterEater':
+                $replacements[3] = 'food--late';
+                $replacements[4] = 'Spätesser';
+                break;
             default:
-                $replacements[3] = ''; break;
+                $replacements[3] = 'food--none';
+                $replacements[4] = 'Kein Essen';
+                break;
         }
         if(!$this->has_meal) {
             $replacements[3] = 'food--none';
             $replacements[4] = 'Kein Essen';
         }
+
+        // $patterns[3] = '/%%FOOD-CLASS%%/';
+        // $patterns[4] = '/%%FOOD%%/';
+        // $replacements[4] = $this->food_time ?: 'Kein Essen';
+
+        // switch ($this->registration) {
+        //     case 'attendee-2meals':
+        //         $replacements[3] = 'lunch dinner'; break;
+        //     case 'attendee-3meals':
+        //         $replacements[3] = 'breakfast lunch dinner'; break;
+        //     default:
+        //         $replacements[3] = ''; break;
+        // }
+        // if(!$this->has_meal) {
+        //     $replacements[3] = 'food--none';
+        //     $replacements[4] = 'Kein Essen';
+        // }
 
         $patterns[5] = '/%%COMMENT%%/';
         $replacements[5] = "";

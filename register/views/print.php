@@ -49,7 +49,7 @@
 
 
         <div class="text-center" style="padding-top: 2em">
-            <a class="btn btn-default btn-lg" href="<?= $route->page_url('info') ?>" role="button">Zurück</a>
+            <a class="btn btn-outline-secondary btn-lg" href="<?= $route->page_url('info') ?>" role="button">Zurück</a>
             &mdash;
             <button type="submit" class="btn btn-success btn-lg">
                 <i class="far fa-check-circle"></i> Registrierung abschlie&szlig;en &amp; Drucken

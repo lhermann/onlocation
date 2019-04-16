@@ -35,7 +35,7 @@
 
 
     <div class="text-center" style="padding-top: 2em">
-        <a class="btn btn-default btn-lg" href="<?= $route->page_url('print') ?>" role="button">Zurück</a>
+        <a class="btn btn-outline-secondary btn-lg" href="<?= $route->page_url('print') ?>" role="button">Zurück</a>
         &mdash;
         <a class="btn btn-success btn-lg" href="<?= $route->page_url('search', 'regid', '') ?>">Zurück zur Hauptseite</a>
     </div>

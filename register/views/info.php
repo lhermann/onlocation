@@ -121,17 +121,21 @@
 
         <?php if (MODULES['guardian']): ?>
           <div class="card mb-3 border-primary">
-            <h4 class="card-header"><?= $reg->status ?></h3>
-            <div class="card-body form-inline">
+            <h4 class="card-header"><?= $reg->label ?></h3>
+            <div class="card-body">
               <?php if (MODULES['yim']): ?>
-                <?php if ($reg->status == 'Standleiter'): ?>
-                  Bereich: <strong><input type="text" class="form-control" value="<?= $reg->area ?>" name="area_private"></strong>
-                <?php else: ?>
-                  Bereich: <strong><?= $reg->area ?: 'keiner' ?></strong>
-                <?php endif ?>
+                <p>
+                  <?php if ($reg->label == 'Standleiter'): ?>
+                    Bereich: <strong><input type="text" class="form-control" value="<?= $reg->area ?>" name="area"></strong>
+                  <?php else: ?>
+                    Bereich: <strong><?= $reg->area ?: 'keiner' ?></strong>
+                  <?php endif ?>
+                </p>
               <?php endif ?>
-              <?php if (isset($reg->t_shirt)): ?>
-                <br>T-Shirt: <strong><?= $reg->t_shirt ?: 'nein' ?></strong>
+              <?php if (isset($reg->tshirt)): ?>
+                <p>
+                  T-Shirt: <strong><?= $reg->tshirt ?: 'nein' ?></strong>
+                </p>
               <?php endif ?>
             </div>
           </div>
@@ -166,20 +170,7 @@
           <h4 class="card-header">Unterkunft</h3>
           <div class="card-body">
             <?php if ($reg->has_lodging()): ?>
-              <select name="lodging" class="form-control">
-                <?php
-                  $options = ["internal", "camping", "external"];
-                  $fields = $reg->distribute_equally(2, $options);
-                  foreach ($fields as $field) {
-                    printf('<option value="%s" %s>[%s] %s</option>',
-                           $field->slug,
-                           $field->selected ? "selected" : "",
-                           $field->count,
-                           $field->slug
-                    );
-                  }
-                ?>
-              </select>
+              <?= $reg->print_room_options(); ?>
             <?php else: ?>
               <span class="lead">Kein Unterkunft gebucht</span>
             <?php endif ?>
@@ -187,32 +178,15 @@
         </div>
 
         <div class="card mb-3 <?= $reg->has_meal() ? 'border-primary' : '' ?>">
-          <h4 class="card-header">Essen</h3>
+          <h4 class="card-header">Essenszeit</h3>
           <div class="card-body">
-             <?php if( $reg->has_meal() ): ?>
-                <h5>Essen</h5>
-                <div class="form-check form-check-inline">
-                  <?= $reg->print_button_with_count('attendee-2meals', 1) ?>
-                  <?= $reg->print_button_with_count('attendee-3meals', 1) ?>
-                </div>
-                <h5 class="mt-3">Essenszeit</h5>
-                <select name="essenszeit" class="form-control">
-                  <?php
-                    $options = ["Frühesser", "Spätesser"];
-                    $fields = $reg->distribute_equally(9, $options);
-                    foreach ($fields as $field) {
-                      printf('<option value="%s" %s>[%s] %s</option>',
-                             $field->slug,
-                             $field->selected ? "selected" : "",
-                             $field->count,
-                             $field->slug
-                      );
-                    }
-                  ?>
-                </select>
-             <?php else: ?>
-               <span class="lead">Kein Essen gebucht</span>
-             <?php endif; ?>
+            <?php if( $reg->has_meal ): ?>
+              <?= $reg->print_meal_button( "EarlyEater" ); ?>
+              <?= $reg->print_meal_button( "LaterEater" ); ?>
+              <?= $reg->print_meal_button( "PrivEater" ); ?>
+            <?php else: ?>
+              <span class="lead">Kein Essen gebucht</span>
+            <?php endif; ?>
           </div>
         </div>
 
@@ -230,7 +204,7 @@
     </div>
 
     <div class="text-center" style="padding-top: 2em">
-      <a class="btn btn-default btn-lg" href="<?= $route->page_url('search') ?>" role="button">Zurück</a> &mdash;
+      <a class="btn btn-outline-secondary btn-lg" href="<?= $route->page_url('search') ?>" role="button">Zurück</a> &mdash;
       <button type="submit" class="btn btn-success btn-lg">Speichern &amp; Weiter</button>
     </div>
 
