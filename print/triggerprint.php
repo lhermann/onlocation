@@ -18,10 +18,7 @@ require_once($root."/config.php");
 require_once($root."/lib/mysql.php");
 global $db;
 
-define('BROTHER_QL_PRINTER', 'file:///dev/usb/lp0');
-define('BROTHER_QL_MODEL', 'QL-570');
-
-for ($i=0; $i < 20; $i++) {
+for ($i=0; $i < 60; $i++) {
 
     // Get next row from db where printed = 0
     $row = $db->get_single_row($db->queue, 'printed', 0);
@@ -33,17 +30,18 @@ for ($i=0; $i < 20; $i++) {
         $db->update_value($db->queue, $row->id, 'printed', 1);
 
         // run print.sh
-        $printer = BROTHER_QL_PRINTER;
-        $model = BROTHER_QL_MODEL;
-        $execstr = "cd $root/print && BROTHER_QL_PRINTER=$printer BROTHER_QL_MODEL=$model ./print.sh $row->file 2>&1";
-
-        putenv("BROTHER_QL_PRINTER=file:///dev/usb/lp0");
-        putenv("BROTHER_QL_MODEL=QL-570");
+        $execstr = sprintf(
+            "cd $root/print && %s %s ./print.sh %s >> %s 2>&1 &",
+            "BROTHER_QL_PRINTER=".BROTHER_QL_PRINTER, // env var
+            "BROTHER_QL_MODEL=".BROTHER_QL_MODEL, // env var
+            $row->file, // file to print
+            "$root/triggerprint.log" // logfile
+        );
         file_put_contents ( $root."/triggerprint.log", shell_exec( $execstr ), FILE_APPEND );
 
     } else {
 
-        sleep(3);
+        sleep(1);
 
     }
 

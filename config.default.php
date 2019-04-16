@@ -19,6 +19,16 @@ define('PRINTER2',  'Brother_QL-570');
 define('PRINTER3',  'Brother_QL-570');
 define('PRINTER4',  'Brother_QL-570');
 
+define('BROTHER_QL_PRINTER', 'file:///dev/usb/lp0');
+define('BROTHER_QL_MODEL', 'QL-570');
+
+define('MODULES', [
+    'guardian'      => true,
+    'volunteer'     => true,
+    'yim'           => true,
+    'josua'         => false
+]);
+
 
 /**
  * Positions
