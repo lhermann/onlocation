@@ -8,5 +8,9 @@ info.php
 config.php
 labels/src/*.html
 labels/pdf/*.pdf
+labels/png/*.png
 *.log
 /*.js
+*.csv
+
+brother_ql

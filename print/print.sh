@@ -15,11 +15,10 @@ then
     exit
 fi
 
-/usr/local/bin/weasyprint -s style.css ../labels/src/$1.html ../labels/pdf/$1.pdf
+/usr/local/bin/weasyprint -r 300 -s style.css ../labels/src/$1.html ../labels/png/$1.png
 
-lpr -P Brother_QL-570 ../labels/pdf/$1.pdf
-echo "lpr -P Brother_QL-570 ../labels/pdf/$1.pdf"
-
+brother_ql print -l 62 ../labels/png/$1.png
+echo "brother_ql print -l 62 ../labels/png/$1.png"
 
 
 
