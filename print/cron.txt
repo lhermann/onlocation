@@ -1,0 +1,3 @@
+# Trigger Lable Printer
+* * * * * www-data /usr/bin/php /var/onlocation/print/triggerprint.php
+
