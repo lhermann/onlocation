@@ -16,6 +16,7 @@ global $route;
 
     <!-- Bootstrap core CSS -->
     <link href="/register/assets/css/bootstrap.min.css?v=4.1.1" rel="stylesheet">
+    <link href="/register/assets/fontawesome-free-5.8.1/css/all.min.css" rel="stylesheet">
 
     <style>
         .table td { vertical-align: middle !important; }

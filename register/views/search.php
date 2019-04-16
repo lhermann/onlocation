@@ -36,6 +36,9 @@
 
     <?php if($reglist->list): ?>
 
+      <i class="far fa-check-circle"></i>
+      <i class="far fa-check-circle"></i>
+
       <table class="table table-striped">
         <thead>
           <tr>
@@ -61,34 +64,33 @@
               <td><?= $reg->human_birthdate(); ?></td>
               <?php if (MODULES['guardian']): ?>
                 <td>
-                  <?= $reg->u18 ? '<span class="glyphicon glyphicon-warning-sign text-danger"></span>' : '-' ?>
+                  <?= $reg->u18 ? '<i class="fas fa-exclamation-triangle text-danger"></i>' : '-' ?>
                 </td>
                 <td>
                   <?php if(!$reg->u18): ?>
                     -
                   <?php elseif($reg->has_guardian): ?>
                     <?php if($reg->guardian_arrived()): ?>
-                      <span class="glyphicon glyphicon-ok text-success"></span>
+                      <i class="far fa-check-circle text-success"></i>
                     <?php else: ?>
-                      <span class="glyphicon glyphicon-remove text-danger"></span>
+                      <i class="far fa-times-circle text-danger"></i>
                     <?php endif; ?>
                     <?= '['.$reg->guardian_id.'] '.$reg->guardian_name ?>
                   <?php else: ?>
-                    <a class="btn btn-success btn-sm" href="<?= $route->page_url( 'guardian', ['regid', 's_name'], [$reg->id, $reg->guardian_name] ); ?>" role="button">Aufsichtsperson</a>
+                    <a class="btn btn-outline-primary btn-sm" href="<?= $route->page_url( 'guardian', ['regid', 's_name'], [$reg->id, $reg->guardian_name] ); ?>" role="button">Aufsichtsperson</a>
                   <?php endif; ?>
                 </td>
               <?php endif ?>
               <td>
                 <?php if( MODULES['guardian'] && !$reg->has_guardian ): ?>
-                  <span class="glyphicon glyphicon-remove text-danger"></span>
+                  <i class="far fa-times-circle text-danger"></i>
                 <?php elseif( MODULES['guardian'] && $reg->u18 && !$reg->guardian_arrived() ): ?>
-                  <span class="glyphicon glyphicon-remove text-danger"></span> <small>Aufsichtsperson ist noch nicht registriert</small>
+                  <i class="far fa-times-circle text-danger"></i> <small>Aufsichtsperson ist noch nicht registriert</small>
                 <?php elseif( !$reg->date_arrived ): ?>
-                  <span class="glyphicon glyphicon-remove text-danger"></span>
                   <a class="btn btn-primary btn-sm" href="<?= $route->page_url( 'info', 'regid', $reg->id ); ?>" role="button">Registrieren</a>
                 <?php else: ?>
-                  <span class="glyphicon glyphicon-ok text-success"></span>
-                  <a class="btn btn-primary btn-sm" href="<?= $route->page_url( 'info', 'regid', $reg->id ); ?>" role="button">Info</a>
+                  <i class="fas fa-check-circle text-success"></i>
+                  <a class="btn btn-outline-success btn-sm" href="<?= $route->page_url( 'info', 'regid', $reg->id ); ?>" role="button">Info</a>
                 <?php endif; ?>
               </td>
             </tr>

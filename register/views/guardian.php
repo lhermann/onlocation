@@ -73,7 +73,7 @@
                                 <td><?= $reg->human_birthdate(); ?></td>
                                 <td>
                                     <?php if( $reg->u18 ): ?>
-                                        <span class="glyphicon glyphicon-warning-sign text-danger"></span> Unter 18
+                                        <i class="fas fa-exclamation-triangle text-danger"></i> Unter 18
                                     <?php else: ?>
                                         <a class="btn btn-success btn-sm" href="<?= $route->page_url( 'search', ['s_regid', 'update_db', 'target', 'guardian_id', 'guardian_name'], [$route->regid, true, 'search', $reg->id, $reg->name()] ); ?>" role="button">Auswählen</a>
                                     <?php endif; ?>

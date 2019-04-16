@@ -24,7 +24,7 @@
                 </div>
                 <div class="panel-body">
                     <span class="lead">
-                        <span class="glyphicon glyphicon-ok" style="color: green;"></span>
+                        <i class="far fa-check-circle text-success"></i>
                         [<?= $reg->id ?>] <?= $reg->name() ?> wurde angemeldet.
                     </span>
                 </div>

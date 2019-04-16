@@ -51,11 +51,11 @@
             <p>Buchungsart: <i><?= $reg->registration ?></i></p>
             <?php if($reg->paid): ?>
               <span class="lead text-success">
-                <?= $reg->to_pay ?> EUR <span class="glyphicon glyphicon-ok"></span>&nbsp; Bezahlt
+                <?= $reg->to_pay ?> EUR <i class="fas fa-check-circle text-success"></i>&nbsp; Bezahlt
               </span>
             <?php else: ?>
               <span class="lead text-danger">
-                <?= $reg->to_pay ?> EUR <span class="glyphicon glyphicon-remove"></span>&nbsp; Nicht Bezahlt
+                <?= $reg->to_pay ?> EUR <i class="fas fa-times-circle text-danger"></i>&nbsp; Nicht Bezahlt
               </span>
             <?php endif; ?>
           </div>
@@ -97,10 +97,10 @@
             <div class="card-body">
               <?php if($reg->u18): ?>
                 <p class="lead text-info">
-                  <span class="glyphicon glyphicon-warning-sign"></span>&nbsp; Unter 18
+                  <i class="far fa-times-circle text-danger"></i>&nbsp; Unter 18
                 </p>
                 <p>
-                  <span class="glyphicon glyphicon-user"></span>&nbsp; [<?= $reg->guardian_id ?>] <?= $reg->guardian_name ?>
+                  <i class="fas fa-user"></i>&nbsp; [<?= $reg->guardian_id ?>] <?= $reg->guardian_name ?>
                 </p>
                 <p class="guardian-letter" data-toggle="buttons">
                   <label class="btn btn-danger <?= $reg->u18_letter ? 'active' : '' ?>">
@@ -109,7 +109,7 @@
                 </p>
               <?php else: ?>
                 <span class="lead text-success">
-                  <span class="glyphicon glyphicon-ok"></span>&nbsp; Über 18
+                  <i class="fas fa-check-circle text-success"></i>&nbsp; Über 18
                 </span>
               <?php endif; ?>
             </div>

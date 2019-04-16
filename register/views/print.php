@@ -52,7 +52,7 @@
             <a class="btn btn-default btn-lg" href="<?= $route->page_url('info') ?>" role="button">Zurück</a>
             &mdash;
             <button type="submit" class="btn btn-success btn-lg">
-                <span class="glyphicon glyphicon-ok"></span> Registrierung abschlie&szlig;en &amp; Drucken
+                <i class="far fa-check-circle"></i> Registrierung abschlie&szlig;en &amp; Drucken
             </button>
         </div>
 
