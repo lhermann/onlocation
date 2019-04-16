@@ -47,10 +47,12 @@ class Reg
             }
         }
 
+        var_dump($this);die();
+
         // guardian
         if( MODULES['guardian'] ) {
-            $this->guardian_id   = $row->{FIELDS['guardian_id']};
-            $this->guardian_name = $row->{FIELDS['guardian_name']};
+            $this->guardian_id   = $row->guardian_id;
+            $this->guardian_name = $row->guardian_name;
             $this->u18           = $this->is_under18();
             $this->has_guardian  = $this->has_guardian_set();
             $this->u18_letter    = $row->rg_parental_letter_received !== null;

@@ -12,5 +12,6 @@ labels/png/*.png
 *.log
 /*.js
 *.csv
+*.bak
 
 brother_ql
