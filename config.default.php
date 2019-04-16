@@ -16,14 +16,6 @@ define('DB_COLLATE',    '');
 /**
  * Settings
  */
-define('MODULES', [
-    'guardian'      => false,
-    'volunteer'     => false,
-    'yim'           => false,
-    'josua'         => true
-]);
-define('PRINTER1',  'Brother_QL-570');
-
 define('BROTHER_QL_PRINTER', 'file:///dev/usb/lp0');
 define('BROTHER_QL_MODEL', 'QL-570');
 
@@ -69,19 +61,6 @@ define('CUSTOMFIELDS', array(
     28  => '',
     29  => '',
     30  => '',
-));
-
-/**
- * Positions
- */
-define('VOLUNTEER', array(
-    'maintenance'       => 'Sauberkeit',
-    'wsaudio'           => 'Workshop Audio',
-    'surroundings'      => 'Außenbereich',
-    'ushers'            => 'Saalordnung',
-    'registration'      => 'Registrierung',
-    'security'          => 'Security',
-    'kitchen'           => 'Küche'
 ));
 
 /**

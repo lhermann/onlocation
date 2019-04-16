@@ -47,39 +47,58 @@ class Reg
             }
         }
 
-        var_dump($this);die();
 
         // guardian
         if( MODULES['guardian'] ) {
-            $this->guardian_id   = $row->guardian_id;
-            $this->guardian_name = $row->guardian_name;
+            // check that these fileds exist
+            if(!property_exists($this, 'guardian_id'))
+                throw new Exception("customfield for 'guardian_id' missing");
+            if(!property_exists($this, 'guardian_name'))
+                throw new Exception("customfield for 'guardian_name' missing");
+
             $this->u18           = $this->is_under18();
             $this->has_guardian  = $this->has_guardian_set();
             $this->u18_letter    = $row->rg_parental_letter_received !== null;
         }
 
+
         if (MODULES['yim']) {
-            $this->translation  = (bool) $row->{FIELDS['translation']};
-            $this->t_shirt      = $row->{FIELDS['t-shirt']};
+            // check that these fileds exist
+            if(!property_exists($this, 'translation'))
+                throw new Exception("customfield for 'translation' missing");
+            if(!property_exists($this, 'tshirt'))
+                throw new Exception("customfield for 'tshirt' missing");
+            if(!property_exists($this, 'volunteer_area'))
+                throw new Exception("customfield for 'volunteer_area' missing");
+            if(!property_exists($this, 'area'))
+                throw new Exception("customfield for 'area' missing");
+            if(!property_exists($this, 'label'))
+                throw new Exception("customfield for 'label' missing");
+            if(!property_exists($this, 'food_priv'))
+                throw new Exception("customfield for 'food_priv' missing");
+            if(!property_exists($this, 'food_time'))
+                throw new Exception("customfield for 'food_time' missing");
+            if(!property_exists($this, 'room_id'))
+                throw new Exception("customfield for 'room_id' missing");
 
             /*
              * volunteer/helper info
              */
             // area
-            $this->area = $row->{FIELDS['area-private']} ?: AREA[$row->{FIELDS['area-public']}];
+            $this->area = $this->volunteer_area ? AREA[$this->volunteer_area] : $this->area;
             // status
-            $this->status = $row->{FIELDS['label']} ?: 'Volunteer';
-            if (!$this->area || $this->status == 'Freiperson') $this->status = 'Teilnehmer';
+            $this->label = $this->label ?: 'Volunteer';
+            if ($this->label == 'Freiperson') $this->label = 'Teilnehmer';
             if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
-            // remove area of some stati
-            if(in_array($this->status, ['Teilnehmer', 'TTBW', 'Medical Team']))
+            // remove area of some statii
+            if(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team']))
                 $this->area = '';
 
             /*
              * lodging
              */
-            $this->has_lodging = in_array($this->registration, ['attendee', 'reduced']);
-            $this->external_lodging = $row->{FIELDS['external-housing']} == 'ExternalHousing';
+            $this->has_lodging = in_array($this->registration, ['attendee', 'reduced', 'child']);
+            $this->external_lodging = $this->external_housing == 'ExternalHousing';
             $this->room_id = $row->rg_assigned_roomID;
 
             if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
@@ -90,9 +109,9 @@ class Reg
              * meals
              */
             // if they booked food then:
-            $this->has_meal = in_array($this->registration, ['attendee', 'reduced']);
-            $this->has_food_priv = $this->is_helper() || (bool) $row->{FIELDS['food-priv']};
-            $this->meal = $row->{FIELDS['food-time']};
+            $this->has_meal = in_array($this->registration, ['attendee', 'reduced', 'child']);
+            $this->has_food_priv = $this->is_helper() ?: (bool) $this->food_priv;
+            $this->meal = $this->food_time;
             if( $this->has_meal && $this->has_food_priv ) {
                 $this->meal = 'PrivEater';
             }
@@ -125,7 +144,7 @@ class Reg
     }
 
     public function is_helper() {
-        return !in_array($this->status, ['Teilnehmer', 'Standleiter']);
+        return !in_array($this->label, ['Teilnehmer', 'Standleiter']);
     }
 
     public function update( $a_in ) {
@@ -135,7 +154,6 @@ class Reg
         // var_dump($a_in);
 
         unset($a_in['p']);
-        unset($a_in['printer']);
         unset($a_in['regid']);
         unset($a_in['update_db']);
         unset($a_in['target']);
@@ -149,8 +167,6 @@ class Reg
                 $a_out['rg_'.$key] = $value;
             }
         }
-
-        // var_dump($a_out); die();
 
         // Page 2
         if( isset($a_in['firstname']) )     $a_out['rg_firstname'] = $a_in['firstname'];
@@ -166,23 +182,9 @@ class Reg
         if( $this->u18 && isset($a_in['u18_letter']) )
             $a_out['rg_parental_letter_received'] = date('Y-m-d');
 
-        // // guardian
-        // if( isset($a_in['guardian_name']) ) $a_out['rg_customfield17'] = $a_in['guardian_name'];
-        // if( isset($a_in['guardian_id']) ) $a_out['rg_customfield18'] = $a_in['guardian_id'];
 
-        // // volunteer/helper info
-        // if( isset($a_in['label']) )        $a_out[FIELDS['label']] = $a_in['label'];
-        // if( isset($a_in['area_private']) ) $a_out[FIELDS['area-private']] = $a_in['area_private'];
-
-        // // lodging
-        // if( isset($a_in['room_id']) )      $a_out['rg_assigned_roomID'] = $a_in['room_id'];
-
-        // // meals
-        // if( isset($a_in['food_time']) )    $a_out[FIELDS['food-time']] = $a_in['food_time'];
-
-
-        // // arrival
-        // if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
+        // arrival
+        if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
 
 
         return $db->update_row( $db->main, $this->id, $a_out );
