@@ -119,7 +119,7 @@ class DB
             SELECT *
             FROM $this->main
             WHERE rg_registrationID = $reg_id
-            AND rg_date_cancelled IS NULL
+            AND (rg_date_cancelled IS NULL OR rg_date_cancelled = 0)
             LIMIT 1;
         ";
         $res = $this->mysqli->query( $string );
@@ -137,7 +137,7 @@ class DB
                 FROM $this->main
                 WHERE (rg_firstname LIKE '%$firstname%'
                 OR rg_lastname LIKE '%$firstname%')
-                AND rg_date_cancelled IS NULL;
+                AND (rg_date_cancelled IS NULL OR rg_date_cancelled = 0);
             ";
         } else {
             $string = "
@@ -145,7 +145,7 @@ class DB
                 FROM $this->main
                 WHERE rg_firstname LIKE '%$firstname%'
                 AND rg_lastname LIKE '%$lastname%'
-                AND rg_date_cancelled IS NULL;
+                AND (rg_date_cancelled IS NULL OR rg_date_cancelled = 0);
             ";
         }
 
@@ -178,7 +178,7 @@ class DB
         }
 
         // gender
-        $gender_clause = "gender IS NULL";
+        $gender_clause = "(gender IS NULL OR gender = '')";
         if($gender) $gender_clause .= " OR gender = '$gender'";
 
         // Building query
@@ -190,6 +190,26 @@ class DB
             WHERE priority <= $priority
             AND $gender_clause
             ORDER BY priority desc, count asc;
+        ";
+
+        $res = $this->mysqli->query( $string );
+        $return = array();
+        while( $field = $res->fetch_object() ) {
+            $return[] = $field;
+        }
+        return $return;
+    }
+
+    public function get_col_with_count($col) {
+        // Building query
+        $string = "
+            SELECT
+                $col AS slug,
+                COUNT(*) AS count
+            FROM $this->main
+            WHERE $col IS NOT NULL
+            GROUP BY $col
+            ORDER BY count desc;
         ";
 
         $res = $this->mysqli->query( $string );

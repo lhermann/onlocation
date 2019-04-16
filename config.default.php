@@ -1,5 +1,7 @@
 <?php
 
+define('DEBUG', true);
+
 /**
  * MySQL Credentials
  */
@@ -14,10 +16,13 @@ define('DB_COLLATE',    '');
 /**
  * Settings
  */
+define('MODULES', [
+    'guardian'      => false,
+    'volunteer'     => false,
+    'yim'           => false,
+    'josua'         => true
+]);
 define('PRINTER1',  'Brother_QL-570');
-define('PRINTER2',  'Brother_QL-570');
-define('PRINTER3',  'Brother_QL-570');
-define('PRINTER4',  'Brother_QL-570');
 
 define('BROTHER_QL_PRINTER', 'file:///dev/usb/lp0');
 define('BROTHER_QL_MODEL', 'QL-570');
@@ -31,6 +36,42 @@ define('MODULES', [
 
 
 /**
+ * Custom Fields
+ */
+define('CUSTOMFIELDS', array(
+    1   => 'registration',
+    2   => 'lodging',
+    3   => 'allergies',
+    4   => 'terms',
+    5   => 'tagesgast',
+    6   => 'label',
+    7   => 'gruppe',
+    8   => '',
+    9   => 'essenszeit',
+    10  => 'kuechendienst',
+    11  => '',
+    12  => '',
+    13  => '',
+    14  => '',
+    15  => '',
+    16  => '',
+    17  => '',
+    18  => '',
+    19  => '',
+    20  => '',
+    21  => '',
+    22  => '',
+    23  => '',
+    24  => '',
+    25  => '',
+    26  => '',
+    27  => '',
+    28  => '',
+    29  => '',
+    30  => '',
+));
+
+/**
  * Positions
  */
 define('VOLUNTEER', array(
@@ -42,45 +83,6 @@ define('VOLUNTEER', array(
     'security'          => 'Security',
     'kitchen'           => 'Küche'
 ));
-
-
-/**
- * Custom Fields
- */
-define('FIELDS', array(
-    ''                  => 'rg_customfield1',
-    ''                  => 'rg_customfield2',
-    'registration'      => 'rg_customfield3',
-    'external-housing'  => 'rg_customfield4',
-    'food-time'         => 'rg_customfield5',
-    ''                  => 'rg_customfield6',
-    'translation'       => 'rg_customfield7',
-    ''                  => 'rg_customfield8',
-    ''                  => 'rg_customfield8',
-    ''                  => 'rg_customfield9',
-    'setup-teardown'    => 'rg_customfield10',
-    ''                  => 'rg_customfield11',
-    ''                  => 'rg_customfield12',
-    'volunteer'         => 'rg_customfield13',
-    'area-public'       => 'rg_customfield14',
-    't-shirt'           => 'rg_customfield15',
-    ''                  => 'rg_customfield16',
-    'guardian_name'     => 'rg_customfield17',
-    'guardian_id'       => 'rg_customfield18',
-    'room_name'         => 'rg_customfield19',
-    ''                  => 'rg_customfield20',
-    ''                  => 'rg_customfield21',
-    ''                  => 'rg_customfield22',
-    ''                  => 'rg_customfield23',
-    'area-private'      => 'rg_customfield24',
-    'label'             => 'rg_customfield25',
-    'food-priv'         => 'rg_customfield26',
-    ''                  => 'rg_customfield27',
-    ''                  => 'rg_customfield28',
-    ''                  => 'rg_customfield29',
-    ''                  => 'rg_customfield30',
-));
-
 
 /**
  * Areas
@@ -97,7 +99,6 @@ define('AREA', array(
     'kitchen'           => 'Küche',
     ''                  => ''
 ));
-
 
 // dump sql from yimteam
 // psql -d yimteam -c "Copy (Select * From helpers_helper) To STDOUT With CSV HEADER DELIMITER ',';" > yimteam.csv

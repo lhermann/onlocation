@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="<?= $route->page_url('search') ?>">On Location</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item <?= $route->is_page('search') ? 'active' : '' ?>">
+                <a class="nav-link" href="<?= $route->page_url('search') ?>">Suche</a>
+            </li>
+            <li class="nav-item <?= $route->is_page('info') ? 'active' : '' ?>">
+                <a class="nav-link" href="<?= $route->page_url('info') ?>">Info</a>
+            </li>
+            <li class="nav-item <?= $route->is_page('print') ? 'active' : '' ?>">
+                <a class="nav-link" href="<?= $route->page_url('print') ?>">Drucken</a>
+            </li>
+        </ul>
+        <span class="navbar-text mx-4" method="get" action="/">
+            IP: <?= $_SERVER['REMOTE_ADDR'] ?> &middot;
+            RegID: <?= $route->get_regid() ?>
+        </span>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="s">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>

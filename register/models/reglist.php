@@ -14,28 +14,49 @@ class Reglist
 
     function __construct($route)
     {
-        global $db;
-        if ( isset($route->query['s_regid']) && $route->query['s_regid'] ) {
-            $this->search_key = 's_regid';
-            $this->search_value = $route->query['s_regid'];
-            $rows[] = $db->search_regid($route->query['s_regid']);
-            if( $this->list[0] == null ) $this->list = [];
+        if ( isset($route->query['s']) && $route->query['s'] ) {
+
+            $rows = $this->by_name($route->query['s']);
+            if(!$rows) {
+                $rows = $this->by_regid($route->query['s']);
+            }
+
+        } elseif ( isset($route->query['s_regid']) && $route->query['s_regid'] ) {
+
+            $rows = $this->by_regid($route->query['s_regid']);
+
         } elseif ( isset($route->query['s_name']) && $route->query['s_name'] ) {
-            $this->search_key = 's_name';
-            $this->search_value = $route->query['s_name'];
-            $rows = $db->search_name($route->query['s_name']);
+
+            $rows = $this->by_name($route->query['s_name']);
+
         } elseif ( isset($route->query['regid']) && $route->query['regid'] ) {
-            $this->search_key = 's_regid';
-            $this->search_value = $route->query['regid'];
-            $rows[] = $db->search_regid($route->query['regid']);
+
+            $rows = $this->by_regid($route->query['regid']);
+
         } else {
+
             $rows = array();
+
         }
 
         foreach ($rows as $key => $row) {
             if( !$row ) break;
             $this->list[$key] = new Reg( $row->rg_registrationID, $row );
         }
+    }
+
+    private function by_regid($value) {
+        global $db;
+        $this->search_key = 's_regid';
+        $this->search_value = $value;
+        return [$db->search_regid($value)] ?: [];
+    }
+
+    private function by_name($value) {
+        global $db;
+        $this->search_key = 's_name';
+        $this->search_value = $value;
+        return $db->search_name($value) ?: [];
     }
 
     public function search_to_string() {
