@@ -85,35 +85,39 @@ class Reg
              * volunteer/helper info
              */
             //label
-            if(!$this->label && $this->volunteer_area) {
-                $this->label = 'Volunteer';
-            } elseif($this->registration === 'day-ticket') {
-                $this->label = 'Tagesgast';
-            } elseif($this->label == 'Freiperson') {
-                $this->label = 'Teilnehmer';
-            } else {
-                $this->label = 'Teilnehmer';
+            if(!$this->label) {
+                if($this->volunteer_area) {
+                    $this->label = 'Volunteer';
+                } elseif($this->registration === 'day-ticket') {
+                    $this->label = 'Tagesgast';
+                } elseif($this->label == 'Freiperson') {
+                    $this->label = 'Teilnehmer';
+                } else {
+                    $this->label = 'Teilnehmer';
+                }
             }
 
             // area
-            if(!$this->area && $this->volunteer_area) {
-                if(isset(AREA[$this->volunteer_area])){
-                    $this->area = AREA[$this->volunteer_area];
-                } else {
-                    $this->area = ucfirst($this->volunteer_area);
+            if(!$this->area) {
+                if($this->volunteer_area) {
+                    if(isset(AREA[$this->volunteer_area])){
+                        $this->area = AREA[$this->volunteer_area];
+                    } else {
+                        $this->area = ucfirst($this->volunteer_area);
+                    }
+                } elseif(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team'])) {
+                    $this->area = '';
+                } elseif($this->label === 'Tagesgast') {
+                    $days = explode(',', $this->day_ticket);
+                    $full_days = [];
+                    foreach ($days as $day) {
+                        if(strpos($day, 'thu') === 0) $full_days[] = "Do";
+                        if(strpos($day, 'fri') === 0) $full_days[] = "Fr";
+                        if(strpos($day, 'sat') === 0) $full_days[] = "Sa";
+                        if(strpos($day, 'sun') === 0) $full_days[] = "So";
+                    }
+                    $this->area = implode(', ', $full_days);
                 }
-            } elseif(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team'])) {
-                $this->area = '';
-            } elseif($this->label === 'Tagesgast') {
-                $days = explode(',', $this->day_ticket);
-                $full_days = [];
-                foreach ($days as $day) {
-                    if(strpos($day, 'thu') === 0) $full_days[] = "Do";
-                    if(strpos($day, 'fri') === 0) $full_days[] = "Fr";
-                    if(strpos($day, 'sat') === 0) $full_days[] = "Sa";
-                    if(strpos($day, 'sun') === 0) $full_days[] = "So";
-                }
-                $this->area = implode(', ', $full_days);
             }
 
             // $this->area =

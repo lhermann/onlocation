@@ -31,7 +31,7 @@ for ($i=0; $i < 60; $i++) {
 
         // run print.sh
         $execstr = sprintf(
-            "cd $root/print && %s %s ./print.sh %s >> %s 2>&1 &",
+            "cd $root/print && %s %s ./print.sh %s >> %s 2>&1",
             "BROTHER_QL_PRINTER=".BROTHER_QL_PRINTER, // env var
             "BROTHER_QL_MODEL=".BROTHER_QL_MODEL, // env var
             $row->file, // file to print
