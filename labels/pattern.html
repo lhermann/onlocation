@@ -76,19 +76,18 @@
         .food-item:nth-child(2) {
             color: white;
         }
-        .breakfast .food-item:nth-child(1),
+        /*.breakfast .food-item:nth-child(1),
         .lunch .food-item:nth-child(2),
         .dinner .food-item:nth-child(3) {
             background-color: white;
             color: black;
-        }
-        /*
+        }*/
         .food-early .icon-box:last-child,
         .food-late .icon-box:first-child,
         .food-none .icon-box {
             border: 2px solid black;
             background-color: white;
-        }*/
+        }
     </style>
 </head>
 <body>
@@ -98,18 +97,19 @@
             <span class="firstname">%%FIRSTNAME%%</span>
             <br><span class="lastname">%%LASTNAME%%</span>
         </h1>
-        <div class="text-left">
-            <span class="icon-box"><span class="fa fa-bed"></span></span>
-            Unterkunft: %%ROOM%%
+        <div class="meta">
+            <div class="meta__left text-left">
+                <span class="icon-box"><span class="fa fa-bed"></span></span>
+                %%ROOM%%
+            </div><!--
+         --><div class="meta__right text-right food %%FOOD-CLASS%%">
+                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
+                <span class="icon-box"><span class="fa fa-cutlery"></span></span>
+            </div>
         </div>
         <div class="status-box">
             <p class="status">%%STATUS%%</p>
             <span class="area">%%SUBSTATUS%%</span>
-        </div>
-        <div class="food %%FOOD-CLASS%%">
-            <div class="food-item icon-box"><span class="fa fa-cutlery"></span></div>
-            <div class="food-item icon-box"><strong>%%FOOD%%</strong></div>
-            <div class="food-item icon-box"><span class="fa fa-cutlery"></span></div>
         </div>
         <div class="footer">
             <p class="comment">%%COMMENT%%</p>
