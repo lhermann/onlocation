@@ -18,7 +18,7 @@ require_once($root."/config.php");
 require_once($root."/lib/mysql.php");
 global $db;
 
-for ($i=0; $i < 60; $i++) {
+for ($i=0; $i < 20; $i++) {
 
     // Get next row from db where printed = 0
     $row = $db->get_single_row($db->queue, 'printed', 0);
@@ -41,7 +41,7 @@ for ($i=0; $i < 60; $i++) {
 
     } else {
 
-        sleep(1);
+        sleep(3);
 
     }
 
