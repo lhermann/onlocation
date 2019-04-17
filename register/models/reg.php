@@ -196,6 +196,7 @@ class Reg
         unset($a_in['s_regid']);
         unset($a_in['update_db']);
         unset($a_in['target']);
+        unset($a_in['u18_letter']);
 
         foreach ($a_in as $key => $value) {
             if($key === 'comment') {
@@ -226,7 +227,7 @@ class Reg
         if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
 
 
-        // var_dump($a_out, $this->id); die();
+        //var_dump($a_out, $this->id); die();
 
         return $db->update_row( $db->main, $this->id, $a_out );
     }
