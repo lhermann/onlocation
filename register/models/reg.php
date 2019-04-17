@@ -152,6 +152,11 @@ class Reg
             $this->has_meal = in_array($this->registration, ['attendee', 'reduced', 'child']) || $this->has_food_priv;
             $this->meal = $this->food_time;
             if( $this->has_food_priv ) $this->meal = 'PrivEater';
+            if( $this->registration === 'day-ticket' ) {
+                $this->meal = null;
+                $this->has_meal = false;
+                $this->has_food_priv = false;
+            }
         }
 
     }
