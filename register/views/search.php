@@ -36,9 +36,6 @@
 
     <?php if($reglist->list): ?>
 
-      <i class="far fa-check-circle"></i>
-      <i class="far fa-check-circle"></i>
-
       <table class="table table-striped">
         <thead>
           <tr>

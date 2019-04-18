@@ -80,7 +80,7 @@ class DB
             WHERE $id_key = $id
             LIMIT 1;
         ";
-        // var_dump($array, $string); exit;
+        //var_dump($array, $string); exit;
         return $this->mysqli->query( $string );
     }
 
@@ -111,7 +111,7 @@ class DB
             LIMIT $limit;
         ";
         $res = $this->mysqli->query( $string );
-        return $res->fetch_object();
+        return $res ? $res->fetch_object() : NULL;
     }
 
     public function search_regid($reg_id) {
@@ -123,7 +123,7 @@ class DB
             LIMIT 1;
         ";
         $res = $this->mysqli->query( $string );
-        return $res->fetch_object();
+        return $res ? $res->fetch_object() : NULL;
     }
 
     public function search_name($name) {

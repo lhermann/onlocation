@@ -14,7 +14,7 @@
 
     <div class="text-center">
         <h1>Aufsichtsperson Wählen</h1>
-        <p>Für [<?= $candidate->id ?>] <?= $candidate->firstname.' '.$candidate->lastname ?> <a class="btn btn-default btn-sm" href="<?= $route->page_url( 'search', 's_regid', $route->regid ); ?>" role="button">Zurück</a></p>
+        <p>Für [<?= $candidate->id ?>] <?= $candidate->firstname.' '.$candidate->lastname ?> <a class="btn btn-outline-secondary btn-sm" href="<?= $route->page_url( 'search', 's_regid', $route->regid ); ?>" role="button">Zurück</a></p>
     </div>
 
     <div class="row">

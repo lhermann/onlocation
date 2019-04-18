@@ -84,26 +84,61 @@ class Reg
             /*
              * volunteer/helper info
              */
+            //label
+            if(!$this->label && $this->volunteer_area) {
+                $this->label = 'Volunteer';
+            } elseif($this->registration === 'day-ticket') {
+                $this->label = 'Tagesgast';
+            } elseif($this->label == 'Freiperson') {
+                $this->label = 'Teilnehmer';
+            } else {
+                $this->label = 'Teilnehmer';
+            }
+
             // area
-            $this->area = $this->volunteer_area ? AREA[$this->volunteer_area] : $this->area;
-            // status
-            $this->label = $this->label ?: 'Volunteer';
-            if ($this->label == 'Freiperson') $this->label = 'Teilnehmer';
-            if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
-            // remove area of some statii
-            if(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team']))
+            if(!$this->area && $this->volunteer_area) {
+                if(isset(AREA[$this->volunteer_area])){
+                    $this->area = AREA[$this->volunteer_area];
+                } else {
+                    $this->area = ucfirst($this->volunteer_area);
+                }
+            } elseif(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team'])) {
                 $this->area = '';
+            } elseif($this->label === 'Tagesgast') {
+                $days = explode(',', $this->day_ticket);
+                $full_days = [];
+                foreach ($days as $day) {
+                    if(strpos($day, 'thu') === 0) $full_days[] = "Do";
+                    if(strpos($day, 'fri') === 0) $full_days[] = "Fr";
+                    if(strpos($day, 'sat') === 0) $full_days[] = "Sa";
+                    if(strpos($day, 'sun') === 0) $full_days[] = "So";
+                }
+                $this->area = implode(', ', $full_days);
+            }
+
+            // $this->area =
+            // $this->area = $this->volunteer_area ? AREA[$this->volunteer_area] : $this->area;
+            // // status
+            // if (strpos($this->registration, 'day')) $this->status = 'Tagesgast';
+            // // remove area of some statii
+            // if(in_array($this->label, ['Teilnehmer', 'TTBW', 'Medical Team']))
+            //     $this->area = '';
 
             /*
              * lodging
              */
             $this->has_lodging = in_array($this->registration, ['attendee', 'reduced', 'child']);
             $this->external_lodging = $this->external_housing == 'ExternalHousing';
-            $this->room_id = $row->rg_assigned_roomID;
 
-            if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
-                $this->room_id = 0;
-            }
+            // if(!$this->room_id && $this->has_lodging)
+            //     $this->room_id = 0;
+
+            if($this->room_id && isset($db))
+                $this->room = $db->get_single_row($db->rooms, 'id', $this->room_id);
+
+            // if( $this->room_id === null && ( $this->external_lodging || !$this->has_lodging ) ) {
+            //     $this->room_id = 0;
+            // }
 
             /*
              * meals
@@ -151,10 +186,12 @@ class Reg
         global $db;
 
         $a_out = array();
-        // var_dump($a_in);
+        //var_dump($a_in);die();
 
         unset($a_in['p']);
+        unset($a_in['printer']);
         unset($a_in['regid']);
+        unset($a_in['s_regid']);
         unset($a_in['update_db']);
         unset($a_in['target']);
 
@@ -186,6 +223,8 @@ class Reg
         // arrival
         if( isset($a_in['date_arrived']) ) $a_out['rg_date_arrived'] = $a_in['date_arrived'];
 
+
+        // var_dump($a_out, $this->id); die();
 
         return $db->update_row( $db->main, $this->id, $a_out );
     }
@@ -290,18 +329,16 @@ class Reg
         $patterns[11] = '/%%LASTNAME%%/';
         $replacements[11] = $this->lastname;
 
-        $patterns[1] = '/%%STATUS%%/';
+        $patterns[1] = '/%%LABEL%%/';
         $replacements[1] = $this->label ?: $this->status();
 
-        $patterns[12] = '/%%SUBSTATUS%%/';
-        $replacements[12] =
-            $this->registration === 'day-ticket'
-            ? str_replace(',', ', ', $this->day_ticket)
-            : $this->area;
+        $patterns[12] = '/%%AREA%%/';
+        $replacements[12] = $this->area;
 
 
         $room = $db->get_single_row($db->rooms, 'id', $this->room_id);
         $patterns[2] = '/%%ROOM%%/';
+        //var_dump($this, $room);die();
         $replacements[2] = $this->room_id ? $room->name : 'Extern';
 
         // $patterns[2] = '/%%ROOM%%/';

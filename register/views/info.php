@@ -119,11 +119,10 @@
       </div>
       <div class="col-md-6">
 
-        <?php if (MODULES['guardian']): ?>
+        <?php if (MODULES['yim']): ?>
           <div class="card mb-3 border-primary">
             <h4 class="card-header"><?= $reg->label ?></h3>
             <div class="card-body">
-              <?php if (MODULES['yim']): ?>
                 <p>
                   <?php if ($reg->label == 'Standleiter'): ?>
                     Bereich: <strong><input type="text" class="form-control" value="<?= $reg->area ?>" name="area"></strong>
@@ -131,7 +130,6 @@
                     Bereich: <strong><?= $reg->area ?: 'keiner' ?></strong>
                   <?php endif ?>
                 </p>
-              <?php endif ?>
               <?php if (isset($reg->tshirt)): ?>
                 <p>
                   T-Shirt: <strong><?= $reg->tshirt ?: 'nein' ?></strong>
